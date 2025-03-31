@@ -27,7 +27,6 @@ app.get('/up', (req, res) => {
 
 // Slack events endpoint
 app.post('/slack/events', async (req, res) => {
-  console.log('Received Slack event:', JSON.stringify(req.body, null, 2))
   
   // Handle Slack URL verification
   if (req.body.type === 'url_verification') {
@@ -37,10 +36,7 @@ app.post('/slack/events', async (req, res) => {
 
   // Handle message events
   if (req.body.event?.type === 'message') {
-    console.log('Handling message event')
     await slackBot.handleMessageEvent(req.body.event)
-  } else {
-    console.log('Received non-message event:', req.body.event?.type)
   }
 
   res.json({ ok: true })
@@ -49,12 +45,6 @@ app.post('/slack/events', async (req, res) => {
 // Start server
 app.listen(port, async () => {
   console.log(transcript('startup', { port }))
-
-  console.log(transcript('bad_project_ideas.base'))
-  kv.set('test', 'test', null, true)
-  console.log(await kv.get('test', true))
-
-  console.log(await kv.get('user_hand:U0C7B14Q3', true))
 
   // Only send initial message if no root message exists
   if (!slackBot.getRootMessage()) {

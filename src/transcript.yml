@@ -46,8 +46,12 @@ drawing:
     - reaches in and snags a card
     - taps on a card
   too_soon:
-    - pulls it up before it's ready, and only gets a glimpse of ${this.t('drawing.scribbled')} '${this.t('bad_project_ideas.base')}' before ${this.t('drawing.disappears')}
-    - "${this.t('bad_project_ideas.base')}?! before you can ponder what that means, ${this.t('drawing.disappears')}!"
+    - pulls it up before it's ready, and only gets a glimpse of ${this.t('drawing.scribbled')} _'${this.t('bad_project_ideas.base')}'_ before ${this.t('drawing.disappears')}
+    - "_${this.t('bad_project_ideas.base')}_?! before you can ponder what that means, ${this.t('drawing.disappears')}!"
+  too_many:
+    - ${this.t('hand.full')}
+    - "_${this.t('bad_project_ideas.base')}_?! before you can ponder what that means, ${this.t('drawing.disappears')}! ${this.t('hand.full')}"
+    - pulls it up before it's ready, and only gets a glimpse of ${this.t('drawing.scribbled')} _'${this.t('bad_project_ideas.base')}'_ before ${this.t('drawing.disappears')} ${this.t('hand.full')}
   disappears:
     - the card disappears
     - the card vanishes
@@ -63,6 +67,16 @@ drawing:
     - a scratched out note
     - a crossed out scribble
     - a smudged ink mark
+hand:
+  empty:
+    - you look at your hands... they're empty
+    - you look at your hands... are you... ok?
+  count:
+    - you look at your hands... you have ${this.count} ${this.pluralCard}
+    - you look at your hands... you have ${this.count} ${this.pluralCard} in your hand
+    - you now have ${this.count} ${this.pluralCard} in your hand
+  full:
+    - your hand is full– maybe invite some more people in?
 cards:
   the_fool:
     name: The Fool
@@ -86,7 +100,6 @@ cards:
       - You feel a mysterious energy fill the chat room
     requirements: |
       do one of the following:
-      - write a voice processor web app
       - use voice processing
       - create a pop culture point and click adventure 
       - create a collaborative mr./mrs./mx. potatoes web app 
@@ -141,13 +154,15 @@ cards:
   #   arcanum: hacker
   #   requirements: >
   the_stoat:
+    # references https://inscryption.fandom.com/wiki/Stoat
+    # & https://inscryption.fandom.com/wiki/Sacrifices_Must_Be_Made
     name: The Stoat
     flavor:
       - stotal misplay
       - total misplay
       - sacrifices must be made
     requirements: |
-      take a project you've been working on but haven't shipped. cut new feature work and ship it now.
+      Take a project you never finished. Ship it without the total linecount of code changing. You may need to remove some features.
   baby_dino:
     name: Baby Dino
     arcanum: hacker

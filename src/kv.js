@@ -2,6 +2,7 @@ const store = new Map()
 
 export const kv = {
   set(key, value, expirationMs = null, backed = false) {
+    console.time('set', key)
     const entry = {
       value,
       expiresAt: expirationMs ? Date.now() + expirationMs : null
@@ -11,16 +12,14 @@ export const kv = {
     if (backed) {
       Bun.write('kv/' + key, JSON.stringify(value))
     }
+    console.timeEnd('set', key)
   },
-
   async get(key, backed = false) {
-    console.log('get', key, backed)
+    console.time('get', key)
     let entry = store.get(key)
-    console.log('entry', entry)
     // check if the file exists on disk
     if (!entry && backed) {
       const file = Bun.file('./kv/' + key)
-      console.log('file', file)
       if (await file.exists()) {
         try {
           const text = await file.text()
@@ -38,13 +37,18 @@ export const kv = {
       }
     }
 
-    if (!entry) return null
-    
-    if (entry.expiresAt && Date.now() > entry.expiresAt) {
-      store.delete(key)
+    if (!entry) {
+      console.timeEnd('get', key)
       return null
     }
     
+    if (entry.expiresAt && Date.now() > entry.expiresAt) {
+      store.delete(key)
+      console.timeEnd('get', key)
+      return null
+    }
+    
+    console.timeEnd('get', key)
     return entry.value
   },
 

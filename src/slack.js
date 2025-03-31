@@ -1,6 +1,7 @@
 import { WebClient } from '@slack/web-api'
 import { transcript } from './transcript.js'
 import { kv } from './kv.js'
+import getUserCounts from './user_counts.js'
 
 export class SlackBot {
   constructor(token, channelId) {
@@ -47,8 +48,6 @@ export class SlackBot {
       if (username) {
         messageParams.username = username
       }
-      
-      console.log('Sending message with params:', JSON.stringify(messageParams, null, 2))
       
       const result = await this.client.chat.postMessage(messageParams)
       
@@ -97,21 +96,28 @@ export class SlackBot {
   async drawCard(messageTs, username) {
     // check if the user has already drawn a card in the past 30 seconds
     const userMention = username.startsWith('U') ? `<@${username}>` : username
+    await this.react(messageTs, 'beachball')
 
-    this.react(messageTs, 'beachball')
+    // handle global user count
+    // by searching kv for "user_hand:"
+    console.time('getUserCounts')
+    const userCounts = await getUserCounts()
+    console.timeEnd('getUserCounts')
+
+    let maxHandSize = 4
+    if (userCounts > 150) {
+      maxHandSize = 5
+    } else if (userCounts > 100) {
+      maxHandSize = 4
+    } else if (userCounts > 50) {
+      maxHandSize = 3
+    } else if (userCounts > 30) {
+      maxHandSize = 2
+    }
 
     try {
-      await this.sendMessage(userMention + ' ' + transcript('drawing.start') + '...', messageTs)
-
-      // Check rate limiting
-      const lastDraw = await kv.get(`card_draw:${username}`)
-      if (lastDraw) {
-        // await this.sendMessage(`${userMention} draws too quickly!`)
-        await this.sendMessage(userMention + ' ' + transcript('drawing.too_soon'), messageTs)
-        return
-      }
-
-      kv.set(`card_draw:${username}`, true, 30 * 1000)
+      let message = userMention + ' ' + transcript('drawing.start') + '...'
+      console.log("message", message)
 
       // get the user's hand
       let userHand = await kv.get(`user_hand:${username}`, true)
@@ -119,21 +125,45 @@ export class SlackBot {
         userHand = []
       }
 
-      const allCards = transcript('cards')
-      const cardKeys = Object.keys(allCards)
-      const availableCards = cardKeys.filter(key => !userHand.includes(key))
-      const randomCard = availableCards[Math.floor(Math.random() * availableCards.length)]
-      userHand.push(randomCard)
-      kv.set(`user_hand:${username}`, userHand, null, true)
+      if (userHand.length >= maxHandSize) {
+        message += ' ' + transcript('drawing.too_many')
+      } else {
+        // Check rate limiting
+        const lastDraw = await kv.get(`card_draw:${username}`)
+        if (lastDraw) {
+          message += ' ' + transcript('drawing.too_soon')
+        } else {
+          kv.set(`card_draw:${username}`, true, 30 * 1000)
 
-      const chosenCard = allCards[randomCard]
-      const flavor = transcript('cards.' + randomCard + '.flavor')
+          const allCards = transcript('cards')
+          const cardKeys = Object.keys(allCards)
+          const availableCards = cardKeys.filter(key => !userHand.includes(key))
+          const randomCard = availableCards[Math.floor(Math.random() * availableCards.length)]
+          userHand.push(randomCard)
+          kv.set(`user_hand:${username}`, userHand, null, true)
+
+          const chosenCard = allCards[randomCard]
+          const flavor = transcript('cards.' + randomCard + '.flavor')
+
+          message += ` and draws *${chosenCard.name}*!\n_${flavor}_\n\nRequirements: \`\`\`${chosenCard.requirements}\`\`\``
+
+          // include user's hand count
+          if (userHand.length == maxHandSize) {
+            message += ' ' + transcript('hand.full')
+          } else {
+            message += ' ' + transcript('hand.count', { count: userHand.length, pluralCard: userHand.length == 1 ? 'card' : 'cards' })
+          }
+        }
+      }
 
       // Send the card result
-      await this.sendMessage(
-        `${userMention} draws the ${chosenCard.name}!\n_${flavor}_\n\nRequirements: ${chosenCard.requirements}`,
-        messageTs
-      )
+      console.time('respondToMessage')
+      await Promise.all([
+        this.react(messageTs, 'beachball', false),
+        this.react(messageTs, 'white_check_mark', true),
+        this.sendMessage(message, messageTs)
+      ])
+      console.timeEnd('respondToMessage')
     } catch (error) {
       console.error('Error in drawCard:', error)
       throw error
@@ -155,34 +185,23 @@ export class SlackBot {
 
   async handleMessageEvent(event) {
     try {
-      // Check if this is a reply in our thread
-      console.log('Received message event:', {
-        thread_ts: event.thread_ts,
-        root_message_ts: this.rootMessage?.messageTs,
-        text: event.text,
-        channel: event.channel,
-        expected_channel: this.channelId,
-        message_ts: event.ts,
-        user: event.user,
-        bot_id: event.bot_id
-      })
-      
       // Verify the message is in our channel
       if (event.channel !== this.channelId) {
-        console.log('Message is not in our channel, ignoring')
+        // console.log('Message is not in our channel, ignoring')
         return
       }
       
       if (event.thread_ts === this.rootMessage?.messageTs) {
         // Check if the message is "DRAW"
         if (event.text.trim().toUpperCase() === 'DRAW') {
-          console.log('DRAW command detected, calling drawCard with messageTs:', event.ts)
           // If it's a bot message, use the bot's username, otherwise use the user's ID
           const username = event.bot_id ? 'The Fool' : event.user
+          console.time('drawCard')
           await this.drawCard(event.ts, username)
+          console.timeEnd('drawCard')
         }
       } else {
-        console.log('Message is not in our thread, ignoring')
+        // console.log('Message is not in our thread, ignoring')
       }
     } catch (error) {
       console.error('Error handling message event:', error)
