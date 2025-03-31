@@ -1,4 +1,6 @@
 import { WebClient } from '@slack/web-api'
+import { transcript } from './transcript.js'
+import { kv } from './kv.js'
 
 export class SlackBot {
   constructor(token, channelId) {
@@ -93,17 +95,45 @@ export class SlackBot {
   }
 
   async drawCard(messageTs, username) {
+    // check if the user has already drawn a card in the past 30 seconds
     const userMention = username.startsWith('U') ? `<@${username}>` : username
-    try {
-      await Promise.all([
-        new Promise(resolve => setTimeout(resolve, 2000)),
-        this.react(messageTs, 'beachball', true),
-      ])
 
-      await Promise.all([
-        this.sendMessage(`${userMention} draws a card`, messageTs),
-        this.react(messageTs, 'beachball', false),
-      ])
+    this.react(messageTs, 'beachball')
+
+    try {
+      await this.sendMessage(userMention + ' ' + transcript('drawing.start') + '...', messageTs)
+
+      // Check rate limiting
+      const lastDraw = await kv.get(`card_draw:${username}`)
+      if (lastDraw) {
+        // await this.sendMessage(`${userMention} draws too quickly!`)
+        await this.sendMessage(userMention + ' ' + transcript('drawing.too_soon'), messageTs)
+        return
+      }
+
+      kv.set(`card_draw:${username}`, true, 30 * 1000)
+
+      // get the user's hand
+      let userHand = await kv.get(`user_hand:${username}`, true)
+      if (!userHand) {
+        userHand = []
+      }
+
+      const allCards = transcript('cards')
+      const cardKeys = Object.keys(allCards)
+      const availableCards = cardKeys.filter(key => !userHand.includes(key))
+      const randomCard = availableCards[Math.floor(Math.random() * availableCards.length)]
+      userHand.push(randomCard)
+      kv.set(`user_hand:${username}`, userHand, null, true)
+
+      const chosenCard = allCards[randomCard]
+      const flavor = transcript('cards.' + randomCard + '.flavor')
+
+      // Send the card result
+      await this.sendMessage(
+        `${userMention} draws the ${chosenCard.name}!\n_${flavor}_\n\nRequirements: ${chosenCard.requirements}`,
+        messageTs
+      )
     } catch (error) {
       console.error('Error in drawCard:', error)
       throw error
