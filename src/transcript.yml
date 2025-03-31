@@ -92,16 +92,15 @@ cards:
       - create a collaborative mr./mrs./mx. potatoes web app 
   the_chariot:
     name: "The Chariot"
-    arcanum: "Major"
+    arcanum: major
     flavor:
       - You've been blessed by terry Davis
       - An FBI agent is reading this  
       - C just wasn't holy enough for you
     requirements: |
       do one of the following:
-      - Write a Holy C hello world 
-      - Speed run temple OS installation and post on youtube
-      - Create an app that changes your OS system language each time you login... the modern tower of babylon
+      - write an app in Holy C
+      - application of babylon– your app must start in a different language each time you boot
   the_magician:
     name: The Magician
     arcanum: major
@@ -129,27 +128,41 @@ cards:
   #   arcanum: major
   #   requirements: >
   #     burn a card & lose the benefit. TODO how this will work
-  # the_tower: # renamed to the monolith
-  #   name: The Monolith
-  #   arcanum: major
-  #   requirements: >
-  #     do one of the following:
-  #     - write all your code in a single file
+  the_tower: # renamed to the monolith
+    name: The Monolith
+    arcanum: major
+    requirements: |
+      do one of the following:
+      - write all your code in a single file
+      - support any language (localization)
 
   # the_sea:
   #   name: The Deep Sea
   #   arcanum: hacker
   #   requirements: >
-  # the_stoat:
-  #   name: The stoat
-  # baby_dino:
-  #   name: Baby Dino
-  #   arcanum: hacker
-  #   requirements: >
-  # raccoon:
-  #   name: Trash Racc
-  #   arcanum: hacker
-  #   requirements: >
+  the_stoat:
+    name: The Stoat
+    flavor:
+      - stotal misplay
+      - total misplay
+      - sacrifices must be made
+    requirements: |
+      take a project you've been working on but haven't shipped. cut new feature work and ship it now.
+  baby_dino:
+    name: Baby Dino
+    arcanum: hacker
+    requirements: |
+      do one of the following:
+      - animate a talking character
+      - include a shop or marketplace in your project
+  raccoon:
+    name: Trash Racc
+    arcanum: hacker
+    requirements: |
+      do one of the following:
+      - solder
+      - construct something out of wood
+      - design a pcb
   the_mycologist:
     name: The Mycologist
     arcanum: hacker
@@ -157,11 +170,11 @@ cards:
       pick up and old project of yours and do one of the following:
       - add a new feature
       - take a feature and put it into a new project
-  # the_broken_keyboard:
-  #   name: th brken keybard
-  #   arcanum: hacker
-  #   flavor:
-  #     - keyboard not detected. press f1 to continue
-  #     - myspacebarisbroken
-  #   requirements: >
-  #     Choose a letter on your keyboard. You can't use it anymore. Not in your project. Not in slack.
+  the_broken_keyboard:
+    name: th brken keybard
+    arcanum: hacker
+    flavor:
+      - keyboard not detected. press f1 to continue
+      - myspacebarisbroken
+    requirements: >
+      Choose a letter on your keyboard. You can't use it anymore. Not in your project. Not in slack. Nowhere.
