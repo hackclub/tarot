@@ -1,0 +1,12 @@
+{
+  "name": "tarot",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "bun run src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "@slack/web-api": "^7.0.1"
+  }
+} 

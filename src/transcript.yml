@@ -1,0 +1,51 @@
+cards:
+  the_fool:
+    name: The Fool
+    arcanum: major
+    flavor:
+      - Watch for new projects and new beginnings
+      - Prepare to take something on faith
+      - Something new comes your way; go for it
+    requirements: >
+      do one of the following:
+      - write in a language you've never written in before
+      - if you've never drawn, make art for your project
+      - if you've never composed music, compose a song for your project
+      - if you've never made a PCB, make a PCB for your project
+  the_magician:
+    name: The Magician
+    arcanum: major
+    flavor:
+      - Your current situation must be seen as one element of a much larger plan
+      - A powerful ally is on your side
+      - You have the ability to make something happen
+    requirements: >
+      do one of the following:
+      TODO
+  strength:
+    name: Strength
+    arcanum: major
+    flavor:
+      - You're strong enough to handle anything
+      - You're not afraid to ask for help
+      - You're not afraid to take risks
+    requirements: >
+      do one of the following:
+      - make a hardware project
+      - write in a strongly typed language
+      - once installed your app cannot be uninstalled
+  the_hanged_man:
+    name: The Hanged Man
+    arcanum: major
+    requirements: >
+      burn a card & lose the benefit. TODO how this will work
+  the_tower: # renamed to the monolith
+    name: The Monolith
+    arcanum: major
+    requirements: >
+      do one of the following:
+
+  the_sea:
+    name: The Sea
+    arcanum
+  the_mycologist:
