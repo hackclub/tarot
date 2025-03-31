@@ -12,6 +12,11 @@ bad_project_ideas:
     - snake
     - resumes (& resume builders)
     - resumes (& cover letters)
+    - a todo list app
+    - a weather app
+    - a calculator
+    - a pomodoro timer
+    - a tic-tac-toe game
   startup_ideas:
     - uber for
     - chatgpt for
@@ -24,7 +29,7 @@ bad_project_ideas:
     - a google colab to solve
     - a repl you can clone to solve
     - solving the problem of
-  big_problems: # the official list of big problems, as deterimned by AI & coin flip
+  big_problems: # the official list of big problems, as fairly deterimned by AI & coin flip
     - climate change
     - healthcare
     - mental health
@@ -45,6 +50,7 @@ drawing:
     - grabs a card
     - reaches in and snags a card
     - taps on a card
+    - double clicks on a card
   too_soon:
     - pulls it up before it's ready, and only gets a glimpse of ${this.t('drawing.scribbled')} _'${this.t('bad_project_ideas.base')}'_ before ${this.t('drawing.disappears')}
     - "_${this.t('bad_project_ideas.base')}_?! before you can ponder what that means, ${this.t('drawing.disappears')}!"
@@ -67,20 +73,44 @@ drawing:
     - a scratched out note
     - a crossed out scribble
     - a smudged ink mark
+    - a hastily erased message
+    - a coffee-stained blot
+    - a tear-stained smear
+    - a hastily scribbled doodle
+    - a water-damaged scrawl
+    - a hastily crossed out text
 hand:
   empty:
     - you look at your hands... they're empty
+    - you look at your hands... you have 2 of them still...
     - you look at your hands... are you... ok?
+    - you look at your hands... might want to consider washing them. you should probably DRAW.
+    - you look at your hands... they're suspiciously clean. you should probably DRAW.
+    - you look at your hands... they're not even sticky anymore. you should probably DRAW.
+    - you look at your hands... they're just hands, doing hand things. you should probably DRAW.
   count:
     - you look at your hands... you have ${this.count} ${this.pluralCard}
     - you look at your hands... you have ${this.count} ${this.pluralCard} in your hand
     - you now have ${this.count} ${this.pluralCard} in your hand
   full:
     - your hand is full– maybe invite some more people in?
+    - you'll gain strength in numbers– get more people to DRAW.
   list:
     - you look at your hands... you have ${this.cards}
     - you gaze at the cards in your hand... ${this.cards}
     - you stare at the cards in your hand... ${this.cards}... wait, did they just stare back at you?
+    - you look at the cards in your hand... ${this.cards}... they seem to shimmer and shift
+    - you glance at the cards in your hand... ${this.cards}... they seem to glow and pulse
+    - you look at the cards in your hand... ${this.cards}... and you hear a faint whisper...
+    - you examine the cards in your hand... ${this.cards}... they feel warm to the touch
+    - you hold the cards in your hand... ${this.cards}... they seem to vibrate with energy
+    - you look at your hands... ${this.cards}... the symbols seem to move when you're not looking
+    - you check the cards in your hand... ${this.cards}... they emit a soft, otherworldly glow
+    - you look at your hands... ${this.cards}... the edges seem to blur and shift
+    - you gaze at the cards... ${this.cards}... they feel heavier than they should
+    - you look at your hands... ${this.cards}... the ink seems to flow like liquid
+    - you examine the cards... ${this.cards}... they whisper secrets in an ancient tongue
+    - you hold the cards... ${this.cards}... they pulse with an unknown power
   emoji:
     - raised_hands
     - handshake
