@@ -46,6 +46,18 @@ cards:
     requirements: >
       do one of the following:
       TODO
+  wheel_of_fortune:
+    name: The Wheel of Fortune
+    arcanum: major
+    flavor:   
+      - Some events are in the core of your cpu
+      - You feel as if you are approaching a segfault
+      - You try to transpile your index.html to c
+    requirements: >
+      do one of the following:
+      - create a C cli fortune telling 8 ball
+      - create a C++ GUI fortune telling application
+      - create a fortune telling web ai agent
   strength:
     name: Strength
     arcanum: major
