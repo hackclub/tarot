@@ -24,6 +24,18 @@ cards:
       - write a voice processor web app
       - create a pop culture point and click adventure 
       - create a collaborative mr./mrs./mx. potatoes web app 
+  the_chariot:
+    name: "The Chariot"
+    arcanum: "Major"
+    flavor:
+      - You've been blessed by terry Davis
+      - An FBI agent is reading this  
+      - C just wasn't holy enough for you
+    requirements: >
+      do one of the following:
+      - Write a Holy C hello world 
+      - Speed run temple OS installation and post on youtube
+      - Create an app that changes your OS system language each time you login... the modern tower of babylon
   the_magician:
     name: The Magician
     arcanum: major
