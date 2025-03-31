@@ -77,6 +77,18 @@ hand:
     - you now have ${this.count} ${this.pluralCard} in your hand
   full:
     - your hand is full– maybe invite some more people in?
+  list:
+    - you look at your hands... you have ${this.cards}
+    - you gaze at the cards in your hand... ${this.cards}
+    - you stare at the cards in your hand... ${this.cards}... wait, did they just stare back at you?
+  emoji:
+    - raised_hands
+    - handshake
+    - ok_hand
+    - open_hands
+    - spock-hand
+    - "+1"
+    - call_me_hand
 cards:
   the_fool:
     name: The Fool

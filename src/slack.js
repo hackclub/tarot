@@ -93,9 +93,7 @@ export class SlackBot {
     }
   }
 
-  async drawCard(messageTs, username) {
-    // check if the user has already drawn a card in the past 30 seconds
-    const userMention = username.startsWith('U') ? `<@${username}>` : username
+  async drawCard(messageTs, username, userMention) {
     await this.react(messageTs, 'beachball')
 
     // handle global user count
@@ -104,15 +102,13 @@ export class SlackBot {
     const userCounts = await getUserCounts()
     console.timeEnd('getUserCounts')
 
-    let maxHandSize = 4
+    let maxHandSize = 2
     if (userCounts > 150) {
       maxHandSize = 5
     } else if (userCounts > 100) {
       maxHandSize = 4
-    } else if (userCounts > 50) {
-      maxHandSize = 3
     } else if (userCounts > 30) {
-      maxHandSize = 2
+      maxHandSize = 3
     }
 
     try {
@@ -183,6 +179,39 @@ export class SlackBot {
     }
   }
 
+  async showHand(messageTs, username, userMention) {
+    try {
+      let [_reaction, _time, userHand] = await Promise.all([
+        this.react(messageTs, 'beachball'),
+        new Promise(resolve => setTimeout(resolve, 1000)),
+        kv.get(`user_hand:${username}`, true)
+      ])
+
+      if (!userHand) {
+        userHand = []
+      }
+      
+      let response = userMention + " "
+      if (userHand.length === 0) {
+        response += transcript('hand.empty')
+      } else {
+        const allCards = transcript('cards')
+        const handNames = userHand.map(cardKey => "`" + allCards[cardKey].name + "`").join(', ')
+        response += transcript('hand.list', { cards: handNames })
+      }
+
+      await Promise.all([
+        this.react(messageTs, 'beachball', false),
+        this.react(messageTs, transcript('hand.emoji'), true),
+        this.sendMessage(response, messageTs)
+      ])
+      
+    } catch (error) {
+      console.error('Error in showHand:', error)
+      throw error
+    }
+  }
+
   async handleMessageEvent(event) {
     try {
       // Verify the message is in our channel
@@ -192,13 +221,18 @@ export class SlackBot {
       }
       
       if (event.thread_ts === this.rootMessage?.messageTs) {
-        // Check if the message is "DRAW"
-        if (event.text.trim().toUpperCase() === 'DRAW') {
-          // If it's a bot message, use the bot's username, otherwise use the user's ID
-          const username = event.bot_id ? 'The Fool' : event.user
+        const command = event.text.trim().toUpperCase()
+        const username = event.bot_id ? 'The Fool' : event.user
+        const userMention = username.startsWith('U') ? `<@${username}>` : username
+
+        if (command === 'DRAW') {
           console.time('drawCard')
-          await this.drawCard(event.ts, username)
+          await this.drawCard(event.ts, username, userMention)
           console.timeEnd('drawCard')
+        } else if (command === 'HAND') {
+          console.time('showHand')
+          await this.showHand(event.ts, username, userMention)
+          console.timeEnd('showHand')
         }
       } else {
         // console.log('Message is not in our thread, ignoring')
