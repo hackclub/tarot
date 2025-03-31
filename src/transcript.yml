@@ -12,6 +12,18 @@ cards:
       - if you've never drawn, make art for your project
       - if you've never composed music, compose a song for your project
       - if you've never made a PCB, make a PCB for your project
+  the_high_priestess:
+    name: The High Priestess
+    arcanum: major
+    flavor:
+      - You feel the inspiration of a diva rushing through your vocal chords
+      - A pop-icon stands in your way 
+      - You feel a mysterious energy fill the chat room
+    requirements: >
+      do one of the following:
+      - write a voice processor web app
+      - create a pop culture point and click adventure 
+      - create a collaborative mr./mrs./mx. potatoes web app 
   the_magician:
     name: The Magician
     arcanum: major
@@ -44,8 +56,34 @@ cards:
     arcanum: major
     requirements: >
       do one of the following:
+      - write all your code in a single file
 
   the_sea:
-    name: The Sea
-    arcanum
+    name: The Deep Sea
+    arcanum: hacker
+    requirements: >
+  the_stoat:
+    name: The stoat
+  baby_dino:
+    name: Baby Dino
+    arcanum: hacker
+    requirements: >
+  raccoon:
+    name: Trash Racc
+    arcanum: hacker
+    requirements: >
   the_mycologist:
+    name: The Mycologist
+    arcanum: hacker
+    requirements: >
+      pick up and old project of yours and do one of the following:
+      - add a new feature
+      - take a feature and put it into a new project
+  the_broken_keyboard:
+    name: th brken keybard
+    arcanum: hacker
+    flavor:
+      - keyboard not detected. press f1 to continue
+      - myspacebarisbroken
+    requirements: >
+      Choose a letter on your keyboard. You can't use it anymore. Not in your project. Not in slack.
