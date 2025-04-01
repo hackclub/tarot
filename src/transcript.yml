@@ -176,7 +176,6 @@ cards:
       do one of the following:
       - get users
       - build a tool that someone else builds their own project with
-      TODO
   wheel_of_fortune:
     name: The Wheel of Fortune
     arcanum: major
@@ -186,9 +185,8 @@ cards:
       - You try to transpile your index.html to c
     requirements: >
       do one of the following:
-      - create a C cli fortune telling 8 ball
-      - create a C++ GUI fortune telling application
-      - create a fortune telling web ai agent
+      - core functionality must be based on randomness
+      - involve fortune telling
   strength:
     name: Strength
     arcanum: major
