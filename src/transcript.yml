@@ -51,13 +51,19 @@ drawing:
     - reaches in and snags a card
     - taps on a card
     - double clicks on a card
-  too_soon:
+  too_soon: # triggers if you roll within 30 sec of last draw
     - pulls it up before it's ready, and only gets a glimpse of ${this.t('drawing.scribbled')} _'${this.t('bad_project_ideas.base')}'_ before ${this.t('drawing.disappears')}
     - "_${this.t('bad_project_ideas.base')}_?! before you can ponder what that means, ${this.t('drawing.disappears')}!"
-  too_many:
+  too_many: # triggers if already at max hand size
     - ${this.t('hand.full')}
     - "_${this.t('bad_project_ideas.base')}_?! before you can ponder what that means, ${this.t('drawing.disappears')}! ${this.t('hand.full')}"
-    - pulls it up before it's ready, and only gets a glimpse of ${this.t('drawing.scribbled')} _'${this.t('bad_project_ideas.base')}'_ before ${this.t('drawing.disappears')} ${this.t('hand.full')}
+    - pulls it up before it's ready, and only gets a glimpse of ${this.t('drawing.scribbled')} _'${this.t('bad_project_ideas.base')}'_ before ${this.t('drawing.disappears')}. ${this.t('hand.full')}
+  no_dice: # random chance, based on user count
+    - you try to pick up a card, but it flutters away before you can grab it
+    - "_${this.t('bad_project_ideas.base')}_?! before you can ponder what that means, ${this.t('drawing.disappears')}! Better luck next time?"
+    - you reach out to grab another card, but it slips through your fingers
+    - you reach out to grab another card, but it's just out of reach
+    - you reach out to grab another card, but see ${this.t('drawing.scribbled')} cryptically staring back at you! You quickly pull your hand back, but realize that might have been just a trick of the light.
   disappears:
     - the card disappears
     - the card vanishes
