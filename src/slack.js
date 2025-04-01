@@ -65,6 +65,9 @@ export class SlackBot {
       }
       if (username) {
         messageParams.username = username
+        if (username === 'The Fool') {
+          messageParams.icon_url = 'https://hc-cdn.hel1.your-objectstorage.com/s/v3/daaf9766396a84e2b083fbf37bac08ba23f768a1_image.png'
+        }
       }
       
       const result = await this.client.chat.postMessage(messageParams)
@@ -90,10 +93,16 @@ export class SlackBot {
       const result = await this.sendMessage('🃏')
       
       // Wait 3 seconds
-      await new Promise(resolve => setTimeout(resolve, 3000))
+      await new Promise(resolve => setTimeout(resolve, 15 * 1000))
       
       // Send follow-up message in thread
       await this.sendMessage("ooooh! what's this deck of cards doing here?", result.ts, 'The Fool')
+
+      // Wait 3 seconds
+      await new Promise(resolve => setTimeout(resolve, 3000))
+
+      // Send follow-up message in thread
+      await this.sendMessage("I kinda want to take one...", result.ts, 'The Fool')
 
       // Wait 3 seconds
       await new Promise(resolve => setTimeout(resolve, 3000))
@@ -126,6 +135,11 @@ export class SlackBot {
       prevUserCount = 0
     }
 
+    let maxHandSize = await kv.get('max_hand_size', true)
+    if (!maxHandSize) {
+      maxHandSize = 2
+    }
+
     const specialActions = [
       {
         count: 4,
@@ -137,11 +151,21 @@ export class SlackBot {
           await this.sendMessage("INSPECT", messageTs, 'The Fool')
         }
       },
+      // {
+      //   count: 12,
+      //   key: 'tutorial_discard',
+      //   action: async () => {
+      //     await this.sendMessage("I don't want this one...", messageTs)
+      //     await new Promise(resolve => setTimeout(resolve, 3000))
+      //     await this.sendMessage("DISCARD", messageTs, 'The Fool')
+      //   }
+      // },
       {
         count: 20,
         flag: 'deck_grows_1',
         action: async () => {
-          await this.sendMessage("As more crowd gathers, the deck grows larger.", messageTs)
+          maxHandSize = 3
+          await this.sendMessage("As more crowd gathers, the deck grows larger. You can now hold 3 cards.", messageTs)
         }
       },
       {
@@ -151,6 +175,22 @@ export class SlackBot {
           await this.sendMessage("Wait, what's this in my hand?", messageTs)
           await new Promise(resolve => setTimeout(resolve, 3000))
           await this.sendMessage("HAND", messageTs, 'The Fool')
+        }
+      },
+      {
+        count: 50,
+        flag: 'deck_grows_2',
+        action: async () => {
+          maxHandSize = 4
+          await this.sendMessage("As more crowd gathers, the deck grows larger... you think you can hold more cards?", messageTs)
+        }
+      },
+      {
+        count: 100,
+        flag: 'deck_grows_3',
+        action: async () => {
+          maxHandSize = 5
+          await this.sendMessage("As more crowd gathers, the deck grows larger.... you can now hold 5 cards", messageTs)
         }
       }
     ]
@@ -167,15 +207,7 @@ export class SlackBot {
     }
 
     kv.set('user_count', userCounts, null, true)
-    
-    let maxHandSize = 2
-    if (userCounts > 150) {
-      maxHandSize = 5
-    } else if (userCounts > 100) {
-      maxHandSize = 4
-    } else if (userCounts > 30) {
-      maxHandSize = 3
-    }
+    kv.set('max_hand_size', maxHandSize, null, true)
 
     try {
       let message = userMention + ' ' + transcript('drawing.start') + '...'
