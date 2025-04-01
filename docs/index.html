@@ -2,6 +2,8 @@
 <html>
 <head>
   <script src="shader.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+  <script src="cards.js" defer></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:wght@400;600&display=swap');
 
@@ -85,6 +87,86 @@
       backdrop-filter: blur(10px);
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
     }
+
+    .cards-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 2rem;
+      width: 100%;
+      margin-top: 2rem;
+    }
+
+    .card {
+      aspect-ratio: 2.5/3.5;
+      background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      position: relative;
+      box-shadow: 
+        0 0 0 1px rgba(255, 255, 255, 0.1),
+        0 4px 8px rgba(0, 0, 0, 0.2),
+        0 8px 16px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 
+        0 0 0 1px rgba(255, 255, 255, 0.2),
+        0 8px 16px rgba(0, 0, 0, 0.3),
+        0 16px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+      transform: translateX(-100%);
+      transition: transform 0.6s ease;
+    }
+
+    .card:hover::before {
+      transform: translateX(100%);
+    }
+
+    .card-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.5rem;
+      margin: 0;
+      color: #ffd700;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+
+    .card-content {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      margin-top: 1rem;
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.4;
+    }
+
+    .card-flavor {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      font-style: italic;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .card-number {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      font-family: 'Cinzel', serif;
+      font-size: 1.2rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
   </style>
   <script>
     function getRandomChar() {
@@ -142,7 +224,9 @@
     }
 
     // Initialize when the DOM is loaded
-    document.addEventListener('DOMContentLoaded', initScrambledText);
+    document.addEventListener('DOMContentLoaded', () => {
+      initScrambledText();
+    });
   </script>
   <title>10 days of tarot</title>
 </head>
@@ -161,14 +245,14 @@
     </p>
     <h3>Play your hand</h3>
     <p>
-      By the end of the 10 days, you'll have 10 cards.
+
     </p>
   </div>
 
   <div class="content">
     <h2>Karma</h2>
   </div>
-  <div class="content">
+  <div class="content" id="arcana">
     <h2>Arcana</h2>
   </div>
     <canvas id="canvas"></canvas>
