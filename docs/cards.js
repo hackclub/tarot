@@ -18,25 +18,35 @@ function createCardElement(key, card) {
   const number = document.createElement('div');
   number.className = 'card-number';
   number.textContent = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-  
-  const title = document.createElement('h3');
-  title.className = 'card-title';
-  title.textContent = card.name;
-  
-  const content = document.createElement('div');
-  content.className = 'card-content';
-  content.textContent = card.requirements;
-  
-  if (card.flavor) {
-    const flavor = document.createElement('div');
-    flavor.className = 'card-flavor';
-    flavor.textContent = Array.isArray(card.flavor) ? card.flavor.join(' ') : card.flavor;
-    content.appendChild(flavor);
-  }
-  
   cardDiv.appendChild(number);
-  cardDiv.appendChild(title);
-  cardDiv.appendChild(content);
+
+  if (card.image) {
+    // Create and append image for image-based cards
+    const img = document.createElement('img');
+    img.src = `cards/${card.image}`;
+    img.alt = card.name;
+    img.className = 'card-image';
+    cardDiv.appendChild(img);
+  } else {
+    // Create text-based card content
+    const title = document.createElement('h3');
+    title.className = 'card-title';
+    title.textContent = card.name;
+    
+    const content = document.createElement('div');
+    content.className = 'card-content';
+    content.textContent = card.requirements;
+    
+    if (card.flavor) {
+      const flavor = document.createElement('div');
+      flavor.className = 'card-flavor';
+      flavor.textContent = Array.isArray(card.flavor) ? card.flavor.join(' ') : card.flavor;
+      content.appendChild(flavor);
+    }
+    
+    cardDiv.appendChild(title);
+    cardDiv.appendChild(content);
+  }
   
   return cardDiv;
 }

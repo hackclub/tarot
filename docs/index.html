@@ -92,6 +92,7 @@
 
     .scrambled {
       font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
       background: rgba(255, 255, 255, 0.1);
       padding: 0.2rem 0.5rem;
       border-radius: 4px;
@@ -237,6 +238,16 @@
       font-size: 1.2rem;
       color: rgba(255, 255, 255, 0.5);
     }
+
+    .card-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+      border-radius: 1rem;
+    }
   </style>
   <script>
     let isShaderPaused = false;
@@ -293,7 +304,7 @@
     function initScrambledText() {
       const scrambledElements = document.querySelectorAll('.scrambled');
       
-      scrambledElements.forEach(element => {
+      scrambledElements.forEach((element, index) => {
         // Store the original text if not already stored
         if (!element.getAttribute('data-text')) {
           element.setAttribute('data-text', element.textContent);
@@ -302,8 +313,11 @@
         // Start with scrambled text
         element.textContent = createInitialScramble(element.getAttribute('data-text'));
         
-        // Set up interval for continuous scrambling
-        setInterval(() => scrambleText(element), 1000);
+        // Set up interval for continuous scrambling with offset
+        const offset = Math.random() * 1000; // Random offset between 0-1000ms
+        setTimeout(() => {
+          setInterval(() => scrambleText(element), 1000);
+        }, offset);
       });
     }
 
@@ -320,7 +334,7 @@
   </button>
   <div class="title-section">
     <h1><img src="title.svg" alt="TaroT" style="max-width: 100%; height: auto;"></h1>
-    <div class="subtitle">play your cards</div>
+    <div class="subtitle">choose your own fate</div>
     <hr>
   </div>
   <div class="content-section">
@@ -332,10 +346,16 @@
       </p>
       <h3>Gain your karma</h3>
       <p>
-        Build a project to gain karma. Each hour you spend working on a project, you get 1 karma.
-        You can log your time using <a href="https://hackatime.hackclub.com">Hackatime</a>, or in <span class="scrambled" data-text="_____ _______">_____ _______</span>.
+        Build a project to gain karma. Each hour you spend working on a project, you get one karma.
+        You can log your time using <a href="https://hackatime.hackclub.com">Hackatime</a>, or in <span class="scrambled" data-text="_____ _______"></span>.
+      </p>
+      <p>
+        Every card has a karma requirement, and it will only contribute to your karma if you can show you met it.
       </p>
       <h3>Play your hand</h3>
+      <p>
+        Submit your finished project at <span class="scrambled" data-text="___ ____ __"></span>. 
+      </p>
       <p>
 
       </p>

@@ -130,6 +130,7 @@ hand:
 cards:
   the_fool:
     name: The Fool
+    image: "the_fool.png"
     arcanum: major
     flavor:
       - Watch for new projects and new beginnings
@@ -190,6 +191,7 @@ cards:
       - involve fortune telling
   strength:
     name: Strength
+    image: "strength.png"
     arcanum: major
     flavor:
       - You're strong enough to handle anything
@@ -201,7 +203,8 @@ cards:
       - write in a strongly typed language
       - once installed your app cannot be uninstalled
   the_hanged_man:
-    name: The Hanged Man
+    name: The Hanging One
+    image: "the_hanging_one.png"
     arcanum: major
     flavor:
       - Time for a new perspective
@@ -210,6 +213,7 @@ cards:
       don't work for more that 2 hours at a time
   the_tower: # renamed to the monolith
     name: The Monolith
+    image: "the_monolith.png"
     arcanum: major
     flavor: # ambition constructed on false pretenses
       - You stand tall, unbending
@@ -219,6 +223,7 @@ cards:
       - support any language (localization)
   the_lovers:
     name: The Lovers
+    image: "the_lovers.png"
     arcanum: major
     flavor:
       - You feel a deep connection forming between disparate parts
@@ -232,6 +237,7 @@ cards:
       - make api calls to another person's project
   the_sea:
     name: The Deep Sea
+    image: "the_deep_sea.png"
     arcanum: hacker
     flavor:
       - You're not afraid to dive deep into a project
@@ -244,6 +250,7 @@ cards:
     # references https://inscryption.fandom.com/wiki/Stoat
     # & https://inscryption.fandom.com/wiki/Sacrifices_Must_Be_Made
     name: The Stoat
+    image: "the_stoat.png"
     flavor:
       - stotal misplay
       - total misplay
@@ -293,6 +300,7 @@ cards:
       Nowhere.
   the_architect:
     name: The Architect
+    image: "the_architect.png"
     arcanum: hacker
     flavor:
       - You see before you a canvas to build upon
