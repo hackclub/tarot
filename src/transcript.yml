@@ -5,6 +5,8 @@ bad_project_ideas:
     - ${this.t('bad_project_ideas.overused_projects')}
     - ${this.t('bad_project_ideas.startup_ideas')} ${this.t('bad_project_ideas.big_problems')}
     - ${this.t('bad_project_ideas.startup_ideas')} ${this.t('bad_project_ideas.overused_projects')}
+    - ${this.t('bad_project_ideas.startup_ideas')} ${this.t('bad_project_ideas.small_problems')}
+    - ${this.t('bad_project_ideas.overused_projects')} but pivoted to solving ${this.t('bad_project_ideas.small_problems')}
   overused_projects:
     - a flying car
     - "2048 (the game)"
@@ -44,6 +46,7 @@ bad_project_ideas:
     - barely audible sighs at the dinner table
     - the sound of your voice
     - longing gazes
+    - half-empty coffee cups
 drawing:
   start:
     - reaches for a card
@@ -152,10 +155,10 @@ cards:
     requirements: |
       do one of the following:
       - use voice processing
-      - create a pop culture point and click adventure 
-      - create a collaborative mr./mrs./mx. potatoes web app 
-  the_chariot:
-    name: "The Chariot"
+      - use generative music or audio
+      - use text to speech or speech to text
+  justice:
+    name: Justice
     arcanum: major
     flavor:
       - You've been blessed by Terry Davis
@@ -181,11 +184,12 @@ cards:
   wheel_of_fortune:
     name: The Wheel of Fortune
     arcanum: major
-    flavor:   
+    flavor:
+      - You're feeling a bit lucky
       - Some events are in the core of your cpu
       - You feel as if you are approaching a segfault
       - You try to transpile your index.html to c
-    requirements: >
+    requirements: |
       do one of the following:
       - core functionality must be based on randomness
       - involve fortune telling
@@ -278,7 +282,7 @@ cards:
     flavor: Gotta catch 'em all! (lawsuits that is)
     requirements: |
       Do one of the following:
-      - use something copyrighted in your project in core functionality of your project
+      - use something copyrighted in core functionality of your project
       - include collectibles in your project
   the_mycologist:
     name: The Mycologist
