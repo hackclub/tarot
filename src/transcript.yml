@@ -237,3 +237,24 @@ cards:
       - myspacebarisbroken
     requirements: >
       Choose a letter on your keyboard. You can't use it anymore. Not in your project. Not in slack. Nowhere.
+  togetherness:
+    name: Togetherness
+    arcanum: hacker
+    requirements: |
+      your project must have a multiplayer/multi user aspect to it
+  black_hole:
+    name: Black Hole
+    arcanum: spectral
+    requirements: |
+      Your project must self destruct
+  talisman:
+    name: Talisman
+    arcanum: spectral
+    requirements: |
+      Your project must use a virtual currency
+  blank_slate:
+    name: Blank Slate
+    arcanum: spectral
+    requirements: |
+      Does nothing :hehe:
+  
