@@ -19,7 +19,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     float transition = min(1.0, iTime * 0.2); // 5 second transition (1/5 = 0.2)
     
     // Adding in a center swirl, changes with iTime. Only applies meaningfully if the 'spin amount' is a non-zero number
-    float speed = (iTime*uSpinEase*0.1) + 302.2;
+    float speed = (iTime*uSpinEase*0.5) + 302.2;
     float new_pixel_angle = (atan(uv.y, uv.x)) + speed - uSpinEase*20.*(1.*uSpinAmount*uv_len + (1. - 1.*uSpinAmount));
     vec2 mid = (iResolution.xy/length(iResolution.xy))/2.;
     uv = (vec2((uv_len * cos(new_pixel_angle) + mid.x), (uv_len * sin(new_pixel_angle) + mid.y)) - mid);
