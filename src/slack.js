@@ -96,12 +96,59 @@ export class SlackBot {
   async drawCard(messageTs, username, userMention) {
     await this.react(messageTs, 'beachball')
 
-    // handle global user count
-    // by searching kv for "user_hand:"
     console.time('getUserCounts')
     const userCounts = await getUserCounts()
     console.timeEnd('getUserCounts')
 
+    console.log("userCounts", userCounts)
+
+    let prevUserCount = await kv.get('user_count', true)
+
+    if (!prevUserCount) {
+      prevUserCount = 0
+    }
+
+    const specialActions = [
+      {
+        count: 4,
+        key: 'tutorial_inspect',
+        action: async () => {
+          // the fool posts "wait, what did I have?"
+          await this.sendMessage("wait, what did I have?", messageTs, 'The Fool')
+          await new Promise(resolve => setTimeout(resolve, 3000))
+          await this.sendMessage("INSPECT", messageTs, 'The Fool')
+        }
+      },
+      {
+        count: 20,
+        flag: 'deck_grows_1',
+        action: async () => {
+          await this.sendMessage("As more crowd gathers, the deck grows larger.", messageTs)
+        }
+      },
+      {
+        count: 35,
+        flag: 'tutorial_hand',
+        action: async () => {
+          await this.sendMessage("Wait, what's this in my hand?", messageTs)
+          await new Promise(resolve => setTimeout(resolve, 3000))
+          await this.sendMessage("HAND", messageTs, 'The Fool')
+        }
+      }
+    ]
+
+    for (const action of specialActions) {
+      console.log("Checking action", action, userCounts, action.count, await kv.get(action.flag, true))
+      if (userCounts >= action.count && !(await kv.get(action.flag, true))) {
+        setTimeout(() => {
+          action.action()
+          kv.set(action.flag, true, null, true)
+        }, 5 * 1000)
+      }
+    }
+
+    kv.set('user_count', userCounts, null, true)
+    
     let maxHandSize = 2
     if (userCounts > 150) {
       maxHandSize = 5

@@ -79,6 +79,8 @@ drawing:
     - a hastily scribbled doodle
     - a water-damaged scrawl
     - a hastily crossed out text
+inspect:
+  no_cards: ${this.t('hand.empty')}
 hand:
   empty:
     - you look at your hands... they're empty

@@ -2,10 +2,14 @@ import { Glob } from "bun"
 
 const glob = new Glob("./kv/user_hand:*")
 
-// Scans the current working directory and each of its sub-directories recursively
 async function getUserCounts() {
-  const files = await glob.scan(".")
-  return files.length
+  // not... totally sure why I can't just files.length, but I wasn't getting valid results from it
+  let i = 0
+  for await (const _file of glob.scan(".")) {
+    i++
+  }
+
+  return i
 }
 
 export default getUserCounts
