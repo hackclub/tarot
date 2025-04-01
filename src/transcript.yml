@@ -210,11 +210,25 @@ cards:
   the_tower: # renamed to the monolith
     name: The Monolith
     arcanum: major
+    flavor: # ambition constructed on false pretenses
+      - You stand tall, unbending
     requirements: |
       do one of the following:
       - write all your code in a single file
       - support any language (localization)
-
+  the_lovers:
+    name: The Lovers
+    arcanum: major
+    flavor:
+      - You feel a deep connection forming between disparate parts
+      - Two systems yearn to be united
+      - The boundaries between systems begin to blur
+      - You sense the potential for harmony between different components
+    requirements: |
+      do one of the following:
+      - write a frontend and a backend for your project. Have them connect
+      - write a bot that interfaces with other bots via slack / discord
+      - make api calls to another person's project
   the_sea:
     name: The Deep Sea
     arcanum: hacker
