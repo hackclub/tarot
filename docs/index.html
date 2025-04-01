@@ -109,6 +109,36 @@
       bottom: 0;
     }
 
+    .pause-button {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: rgba(255, 255, 255, 0.8);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(5px);
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .pause-button:hover {
+      background: rgba(0, 0, 0, 0.5);
+      border-color: rgba(255, 255, 255, 0.4);
+      color: white;
+    }
+
+    .pause-button svg {
+      width: 20px;
+      height: 20px;
+    }
+
     .content {
       background: rgba(0, 0, 0, 0.3);
       padding: 2rem;
@@ -209,6 +239,20 @@
     }
   </style>
   <script>
+    let isShaderPaused = false;
+
+    function toggleShader() {
+      isShaderPaused = !isShaderPaused;
+      const button = document.getElementById('pauseButton');
+      if (isShaderPaused) {
+        button.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
+      } else {
+        button.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
+      }
+      // The shader.js file should check this global variable
+      window.isShaderPaused = isShaderPaused;
+    }
+
     function getRandomChar() {
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}|;:,.<>?';
       return chars[Math.floor(Math.random() * chars.length)];
@@ -271,6 +315,9 @@
   <title>10 days of tarot</title>
 </head>
 <body>
+  <button class="pause-button" id="pauseButton" onclick="toggleShader()">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+  </button>
   <div class="title-section">
     <h1><img src="title.svg" alt="TaroT" style="max-width: 100%; height: auto;"></h1>
     <div class="subtitle">play your cards</div>

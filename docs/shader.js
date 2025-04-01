@@ -335,12 +335,16 @@ void main() {
 	}
 
 	render() {
-		this.uniforms.iTime = (Date.now() - this.startTime) / 1000;
+		// Use the program before setting uniforms
+		this.gl.useProgram(this.program);
+
+		// Only update time if not paused
+		if (!window.isShaderPaused) {
+			this.uniforms.iTime = (Date.now() - this.startTime) / 1000;
+		}
 		
 		// Update colors based on time
 		this.uniforms.uColor1 = this.getTimeBasedColors();
-		
-		this.gl.useProgram(this.program);
 
 		// Update all uniforms
 		this.gl.uniform1f(this.uniformLocations.iTime, this.uniforms.iTime);
@@ -357,6 +361,7 @@ void main() {
 		// Draw
 		this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
 
+		// Request next frame
 		requestAnimationFrame(() => this.render());
 	}
 }
