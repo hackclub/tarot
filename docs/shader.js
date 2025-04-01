@@ -63,6 +63,11 @@ class ShaderCanvas {
 		// Add time simulation properties
 		this.simulatedTime = null;
 		this.isSimulating = false;
+		
+		// Add FPS limiting
+		this.targetFPS = 30;
+		this.frameInterval = 1000 / this.targetFPS;
+		this.lastFrameTime = 0;
 
 		// Function to get color based on time of day
 		this.getTimeBasedColors = () => {
@@ -335,14 +340,28 @@ void main() {
 	}
 
 	render() {
-		// Use the program before setting uniforms
+		const currentTime = performance.now();
+		const elapsed = currentTime - this.lastFrameTime;
+
+		if (elapsed < this.frameInterval) {
+			// Skip frame if not enough time has passed
+			if (!window.isShaderPaused) {
+				requestAnimationFrame(() => this.render());
+			}
+			return;
+		}
+
+		// Update last frame time, accounting for any extra time that passed
+		this.lastFrameTime = currentTime - (elapsed % this.frameInterval);
+
+		// Use the program
 		this.gl.useProgram(this.program);
 
 		// Only update time if not paused
 		if (!window.isShaderPaused) {
 			this.uniforms.iTime = (Date.now() - this.startTime) / 1000;
 		}
-		
+
 		// Update colors based on time
 		this.uniforms.uColor1 = this.getTimeBasedColors();
 
@@ -361,8 +380,10 @@ void main() {
 		// Draw
 		this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
 
-		// Request next frame
-		requestAnimationFrame(() => this.render());
+		// Request next frame only if not paused
+		if (!window.isShaderPaused) {
+			requestAnimationFrame(() => this.render());
+		}
 	}
 }
 
