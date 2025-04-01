@@ -12,22 +12,49 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
-      padding: 2rem;
       color: #fff;
       font-family: 'Cormorant Garamond', serif;
       line-height: 1.6;
+    }
+
+    .title-section {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      text-align: center;
+    }
+
+    .subtitle {
+      font-family: 'Cinzel', serif;
+      font-size: 1.5rem;
+      margin: 1rem 0;
+      opacity: 0.8;
+    }
+
+    .content-section {
       max-width: 800px;
-      margin: 0 auto;
+      padding: 2rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    hr {
+      width: 200px;
+      border: none;
+      border-top: 1px solid rgba(255, 255, 255, 0.3);
+      margin: 2rem 0;
     }
 
     h1 {
       font-family: 'Cinzel', serif;
-      font-size: 4rem;
-      margin: 0 0 2rem;
+      margin: 0;
       text-align: center;
       text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+      width: 100%;
     }
 
     h2 {
@@ -35,6 +62,8 @@
       font-size: 2.5rem;
       margin: 3rem 0 1.5rem;
       text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+      text-align: center;
+      width: 100%;
     }
 
     h3 {
@@ -88,6 +117,12 @@
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
     }
 
+    #arcana.content {
+      background: none;
+      backdrop-filter: none;
+      box-shadow: none;
+    }
+
     .cards-container {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -109,6 +144,11 @@
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       cursor: pointer;
       overflow: hidden;
+    }
+
+    #arcana .card {
+      background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+      backdrop-filter: none;
     }
 
     .card:hover {
@@ -231,30 +271,36 @@
   <title>10 days of tarot</title>
 </head>
 <body>
-  <h1>TaroT</h1>
-  <div class="content">
-    <h2>How to play</h2>
-    <h3>Draw your cards</h3>
-    <p>
-      Draw your cards by pulling them out of the #announcements channel in slack.
-    </p>
-    <h3>Gain your karma</h3>
-    <p>
-      Build a project to gain karma. Each hour you spend working on a project, you get 1 karma.
-      You can log your time using <a href="https://hackatime.hackclub.com">Hackatime</a>, or in <span class="scrambled" data-text="_____ _______">_____ _______</span>.
-    </p>
-    <h3>Play your hand</h3>
-    <p>
+  <div class="title-section">
+    <h1><img src="title.svg" alt="TaroT" style="max-width: 100%; height: auto;"></h1>
+    <div class="subtitle">subtitle here</div>
+    <hr>
+  </div>
+  <div class="content-section">
+    <div class="content">
+      <h2>How to play</h2>
+      <h3>Draw your cards</h3>
+      <p>
+        Draw your cards by pulling them out of the #announcements channel in slack.
+      </p>
+      <h3>Gain your karma</h3>
+      <p>
+        Build a project to gain karma. Each hour you spend working on a project, you get 1 karma.
+        You can log your time using <a href="https://hackatime.hackclub.com">Hackatime</a>, or in <span class="scrambled" data-text="_____ _______">_____ _______</span>.
+      </p>
+      <h3>Play your hand</h3>
+      <p>
 
-    </p>
-  </div>
+      </p>
+    </div>
 
-  <div class="content">
-    <h2>Karma</h2>
-  </div>
-  <div class="content" id="arcana">
-    <h2>Arcana</h2>
-  </div>
+    <div class="content">
+      <h2>Karma</h2>
+    </div>
+    <div class="content" id="arcana">
+      <h2>Arcana</h2>
+    </div>
     <canvas id="canvas"></canvas>
+  </div>
 </body>
 </html>
