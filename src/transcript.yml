@@ -296,21 +296,33 @@ cards:
   togetherness:
     name: Togetherness
     arcanum: hacker
+    flavor:
+      - You feel a deep connection forming between disparate parts
+      - You sense the potential for harmony between different components
     requirements: |
       your project must have a multiplayer/multi user aspect to it
   black_hole:
     name: Black Hole
     arcanum: spectral
+    flavor:
+      - a growing hunger appears in the universe
+      - a self fulfilling prophecy
     requirements: |
       Your project must self destruct
   talisman:
     name: Talisman
     arcanum: spectral
+    flavor:
+      - a talisman of power
+      - a talisman of luck
     requirements: |
       Your project must use a virtual currency
   blank_slate:
     name: Blank Slate
     arcanum: spectral
+    flavor:
+      - a fresh start
+      - does nothing?
     requirements: |
       Does nothing :hehe:
   
