@@ -165,6 +165,7 @@ cards:
       do one of the following:
       - write an app in Holy C
       - application of babylon– your app must start in a different language each time you boot
+      - no text in your project at all
   the_magician:
     name: The Magician
     arcanum: major
@@ -293,82 +294,82 @@ cards:
       - build a 3d model as your hardware project (must be printable & on thingiverse/printables)
       - build an executable for multiple architectures (ARM/x86/MIPS oh my!)
       - build using a framework that you haven't used before
-  togetherness:
-    name: Togetherness
-    arcanum: hacker
-    flavor:
-      - You feel a deep connection forming between disparate parts
-      - You sense the potential for harmony between different components
-    requirements: |
-      your project must have a multiplayer/multi user aspect to it
-  black_hole:
-    name: Black Hole
-    arcanum: spectral
-    flavor:
-      - a growing hunger appears in the universe
-      - a self fulfilling prophecy
-    requirements: |
-      Your project must self destruct
-  talisman:
-    name: Talisman
-    arcanum: spectral
-    flavor:
-      - a talisman of power
-      - a talisman of luck
-    requirements: |
-      Your project must use a virtual currency
-  blank_slate:
-    name: Blank Slate
-    arcanum: spectral
-    flavor:
-      - a fresh start
-      - does nothing?
-    requirements: |
-      Does nothing :hehe:
-  opposite_day:
-    name: Opposite Day
-    arcanum: buffoon
-    flavor:
-      - what a terrible day!
-      - this is normal
-    requirements: |
-      remix an existing ship but it must do the exact opposite of what it was intended to do
-  dracula:
-    name: Dracula
-    arcanum: buffoon
-    flavor:
-      - yummy blood
-      - you feel a growing thirst for blood
-      - the name "draaacuuuulaaaaa" echoes in your mind
-    requirements: |
-      make a project that uses way too many unnecessary resources or libraries
-  sad_clown:
-    name: Sad Clown
-    arcanum: buffoon
-    flavor:
-      - "i'm so bad at coming up with these :heavysob:"
-      - "why did the chicken cross the road? idk :heavysob:"
-      - "wanna hear a joke? it's me!"
-    requirements: |
-      do one of the following:
-        - use high contrast colors in your project
-        - include terrible puns
-        - make clown noises
-  the_audiophile:
-    name: The Audiophile
-    arcanum: buffoon
-    flavor:
-      - "now complete with surround sound!"
-      - "*the THX sound plays*"      
-    requirements: |
-      do one of the following:
-        - your project must play elevator music
-        - your project must blast music at 100% volume
-  flower_pot:
-    name: Flower Pot
-    arcanum: buffoon
-    flavor:
-      - "lotta flowers in here"
-      - "one pot, many flowers"
-    requirements: |
-      your project must use 3 or more different programming languages
+  # togetherness:
+  #   name: Togetherness
+  #   arcanum: hacker
+  #   flavor:
+  #     - You feel a deep connection forming between disparate parts
+  #     - You sense the potential for harmony between different components
+  #   requirements: |
+  #     your project must have a multiplayer/multi user aspect to it
+  # black_hole:
+  #   name: Black Hole
+  #   arcanum: spectral
+  #   flavor:
+  #     - a growing hunger appears in the universe
+  #     - a self fulfilling prophecy
+  #   requirements: |
+  #     Your project must self destruct
+  # talisman:
+  #   name: Talisman
+  #   arcanum: spectral
+  #   flavor:
+  #     - a talisman of power
+  #     - a talisman of luck
+  #   requirements: |
+  #     Your project must use a virtual currency
+  # blank_slate:
+  #   name: Blank Slate
+  #   arcanum: spectral
+  #   flavor:
+  #     - a fresh start
+  #     - does nothing?
+  #   requirements: |
+  #     Does nothing :hehe:
+  # opposite_day:
+  #   name: Opposite Day
+  #   arcanum: buffoon
+  #   flavor:
+  #     - what a terrible day!
+  #     - this is normal
+  #   requirements: |
+  #     remix an existing ship but it must do the exact opposite of what it was intended to do
+  # dracula:
+  #   name: Dracula
+  #   arcanum: buffoon
+  #   flavor:
+  #     - yummy blood
+  #     - you feel a growing thirst for blood
+  #     - the name "draaacuuuulaaaaa" echoes in your mind
+  #   requirements: |
+  #     make a project that uses way too many unnecessary resources or libraries
+  # sad_clown:
+  #   name: Sad Clown
+  #   arcanum: buffoon
+  #   flavor:
+  #     - "i'm so bad at coming up with these :heavysob:"
+  #     - "why did the chicken cross the road? idk :heavysob:"
+  #     - "wanna hear a joke? it's me!"
+  #   requirements: |
+  #     do one of the following:
+  #       - use high contrast colors in your project
+  #       - include terrible puns
+  #       - make clown noises
+  # the_audiophile:
+  #   name: The Audiophile
+  #   arcanum: buffoon
+  #   flavor:
+  #     - "now complete with surround sound!"
+  #     - "*the THX sound plays*"      
+  #   requirements: |
+  #     do one of the following:
+  #       - your project must play elevator music
+  #       - your project must blast music at 100% volume
+  # flower_pot:
+  #   name: Flower Pot
+  #   arcanum: buffoon
+  #   flavor:
+  #     - "lotta flowers in here"
+  #     - "one pot, many flowers"
+  #   requirements: |
+  #     your project must use 3 or more different programming languages
