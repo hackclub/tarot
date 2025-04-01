@@ -138,7 +138,9 @@ export class SlackBot {
     let maxHandSize = await kv.get('max_hand_size', true)
     if (!maxHandSize) {
       maxHandSize = 2
+      kv.set('max_hand_size', maxHandSize, null, true)
     }
+    let prevMaxHandSize = maxHandSize
 
     const specialActions = [
       {
@@ -207,7 +209,10 @@ export class SlackBot {
     }
 
     kv.set('user_count', userCounts, null, true)
-    kv.set('max_hand_size', maxHandSize, null, true)
+    // only set this if the max_hand_size has increased to prevent race conditions
+    if (maxHandSize > prevMaxHandSize) {
+      kv.set('max_hand_size', maxHandSize, null, true)
+    }
 
     try {
       let message = userMention + ' ' + transcript('drawing.start') + '...'

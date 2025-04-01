@@ -28,19 +28,23 @@ function createCardElement(key, card) {
     img.className = 'card-image';
     cardDiv.appendChild(img);
   } else {
-    // Create text-based card content
+    // Create text-based card content with scramble effect
     const title = document.createElement('h3');
-    title.className = 'card-title';
+    title.className = 'card-title scrambled';
+    title.setAttribute('data-text', card.name);
     title.textContent = card.name;
     
     const content = document.createElement('div');
-    content.className = 'card-content';
+    content.className = 'card-content scrambled';
+    content.setAttribute('data-text', card.requirements);
     content.textContent = card.requirements;
     
     if (card.flavor) {
       const flavor = document.createElement('div');
-      flavor.className = 'card-flavor';
-      flavor.textContent = Array.isArray(card.flavor) ? card.flavor.join(' ') : card.flavor;
+      flavor.className = 'card-flavor scrambled';
+      const flavorText = Array.isArray(card.flavor) ? card.flavor.join(' ') : card.flavor;
+      flavor.setAttribute('data-text', flavorText);
+      flavor.textContent = flavorText;
       content.appendChild(flavor);
     }
     
@@ -73,6 +77,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Find the Arcana section and append the cards container
     const arcanaSection = document.getElementById('arcana');
     arcanaSection.appendChild(container);
+
+    // Initialize scramble effect after cards are added
+    initScrambledText();
   } else {
     console.error('Invalid cards data:', cards);
   }

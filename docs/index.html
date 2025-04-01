@@ -42,6 +42,14 @@
       box-sizing: border-box;
     }
 
+    .content-section .content {
+      margin-bottom: 6rem;
+    }
+
+    .content-section .content:last-child {
+      margin-bottom: 0;
+    }
+
     hr {
       width: 200px;
       border: none;
@@ -99,6 +107,30 @@
       display: inline-block;
       min-width: 8em;
       letter-spacing: 0.1em;
+    }
+
+    /* Card-specific scrambled text styling */
+    .card .scrambled {
+      background: none;
+      padding: 0;
+      display: block;
+      min-width: 0;
+      font-family: inherit;
+      font-size: inherit;
+    }
+
+    .card .card-title.scrambled {
+      font-family: 'Cinzel', serif;
+      font-size: 1.5rem;
+    }
+
+    .card .card-content.scrambled {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+    }
+
+    .card .card-flavor.scrambled {
+      font-style: italic;
     }
 
     #canvas {
@@ -323,7 +355,7 @@
 
     // Initialize when the DOM is loaded
     document.addEventListener('DOMContentLoaded', () => {
-      initScrambledText();
+      // Initialization moved to cards.js
     });
   </script>
   <title>10 days of tarot</title>
@@ -363,6 +395,10 @@
 
     <div class="content">
       <h2>Karma</h2>
+
+      <p class="scrambled">
+        lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      </p>
     </div>
     <div class="content" id="arcana">
       <h2>Arcana</h2>
