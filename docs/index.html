@@ -3,23 +3,174 @@
 <head>
   <script src="shader.js" defer></script>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:wght@400;600&display=swap');
+
     body {
       margin: 0;
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
+      padding: 2rem;
+      color: #fff;
+      font-family: 'Cormorant Garamond', serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
     }
+
     h1 {
-      color: white;
+      font-family: 'Cinzel', serif;
+      font-size: 4rem;
+      margin: 0 0 2rem;
       text-align: center;
-      font-family: monospace;
-      margin: 0;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+
+    h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 2.5rem;
+      margin: 3rem 0 1.5rem;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+    }
+
+    h3 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.8rem;
+      margin: 2rem 0 1rem;
+      color: #ffd700;
+    }
+
+    p {
+      font-size: 1.2rem;
+      margin: 0 0 1.5rem;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+    }
+
+    a {
+      color: #ffd700;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    a:hover {
+      color: #fff;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+
+    .scrambled {
+      font-family: 'Courier New', monospace;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      display: inline-block;
+      min-width: 8em;
+      letter-spacing: 0.1em;
+    }
+
+    #canvas {
+      position: fixed;
+      z-index: -1;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    .content {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 2rem;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
     }
   </style>
+  <script>
+    function getRandomChar() {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}|;:,.<>?';
+      return chars[Math.floor(Math.random() * chars.length)];
+    }
+
+    function scrambleText(element) {
+      const text = element.textContent;
+      const positions = [];
+      
+      // Find all positions that aren't spaces
+      for (let i = 0; i < text.length; i++) {
+        if (text[i] !== ' ') {
+          positions.push(i);
+        }
+      }
+      
+      // Pick a random position to change
+      const randomPos = positions[Math.floor(Math.random() * positions.length)];
+      
+      // Create new text with one character changed
+      const newText = text.split('');
+      newText[randomPos] = getRandomChar();
+      element.textContent = newText.join('');
+    }
+
+    function createInitialScramble(text) {
+      let scrambled = '';
+      for (let i = 0; i < text.length; i++) {
+        if (text[i] === ' ') {
+          scrambled += ' ';
+        } else {
+          scrambled += getRandomChar();
+        }
+      }
+      return scrambled;
+    }
+
+    function initScrambledText() {
+      const scrambledElements = document.querySelectorAll('.scrambled');
+      
+      scrambledElements.forEach(element => {
+        // Store the original text if not already stored
+        if (!element.getAttribute('data-text')) {
+          element.setAttribute('data-text', element.textContent);
+        }
+        
+        // Start with scrambled text
+        element.textContent = createInitialScramble(element.getAttribute('data-text'));
+        
+        // Set up interval for continuous scrambling
+        setInterval(() => scrambleText(element), 1000);
+      });
+    }
+
+    // Initialize when the DOM is loaded
+    document.addEventListener('DOMContentLoaded', initScrambledText);
+  </script>
+  <title>10 days of tarot</title>
 </head>
 <body>
-  <h1>arcana</h1>
-  <canvas id="canvas" style="position: fixed; z-index: -1; top: 0; left: 0; right: 0; bottom: 0;"></canvas>
+  <h1>TaroT</h1>
+  <div class="content">
+    <h2>How to play</h2>
+    <h3>Draw your cards</h3>
+    <p>
+      Draw your cards by pulling them out of the #announcements channel in slack.
+    </p>
+    <h3>Gain your karma</h3>
+    <p>
+      Build a project to gain karma. Each hour you spend working on a project, you get 1 karma.
+      You can log your time using <a href="https://hackatime.hackclub.com">Hackatime</a>, or in <span class="scrambled" data-text="_____ _______">_____ _______</span>.
+    </p>
+    <h3>Play your hand</h3>
+    <p>
+      By the end of the 10 days, you'll have 10 cards.
+    </p>
+  </div>
+
+  <div class="content">
+    <h2>Karma</h2>
+  </div>
+  <div class="content">
+    <h2>Arcana</h2>
+  </div>
+    <canvas id="canvas"></canvas>
 </body>
 </html>
