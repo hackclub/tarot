@@ -1,5 +1,7 @@
 import express from 'express'
 import { SlackBot } from './slack.js'
+import { transcript } from './transcript.js'
+import { kv } from './kv.js'
 
 const app = express()
 const port = process.env.PORT || 3030
@@ -25,7 +27,6 @@ app.get('/up', (req, res) => {
 
 // Slack events endpoint
 app.post('/slack/events', async (req, res) => {
-  console.log('Received Slack event:', JSON.stringify(req.body, null, 2))
   
   // Handle Slack URL verification
   if (req.body.type === 'url_verification') {
@@ -35,10 +36,7 @@ app.post('/slack/events', async (req, res) => {
 
   // Handle message events
   if (req.body.event?.type === 'message') {
-    console.log('Handling message event')
     await slackBot.handleMessageEvent(req.body.event)
-  } else {
-    console.log('Received non-message event:', req.body.event?.type)
   }
 
   res.json({ ok: true })
@@ -46,8 +44,8 @@ app.post('/slack/events', async (req, res) => {
 
 // Start server
 app.listen(port, async () => {
-  console.log(`Server is running on port ${port}`)
-  
+  console.log(transcript('startup', { port }))
+
   // Only send initial message if no root message exists
   if (!slackBot.getRootMessage()) {
     console.log('No existing root message found, sending initial message...')

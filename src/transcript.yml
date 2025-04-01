@@ -1,3 +1,132 @@
+startup: tarot is starting up on port ${this.port}
+
+bad_project_ideas:
+  base:
+    - ${this.t('bad_project_ideas.overused_projects')}
+    - ${this.t('bad_project_ideas.startup_ideas')} ${this.t('bad_project_ideas.big_problems')}
+    - ${this.t('bad_project_ideas.startup_ideas')} ${this.t('bad_project_ideas.overused_projects')}
+  overused_projects:
+    - a flying car
+    - "2048 (the game)"
+    - tetris
+    - snake
+    - resumes (& resume builders)
+    - resumes (& cover letters)
+    - a todo list app
+    - a weather app
+    - a calculator
+    - a pomodoro timer
+    - a tic-tac-toe game
+  startup_ideas:
+    - uber for
+    - chatgpt for
+    - tinder for
+    - a chatbot that can solve
+    - airbnb for
+    - monitizing
+    - commodifying
+    - big data to solve
+    - a google colab to solve
+    - a repl you can clone to solve
+    - solving the problem of
+  big_problems: # the official list of big problems, as fairly deterimned by AI & coin flip
+    - climate change
+    - healthcare
+    - mental health
+    - education
+    - homelessness
+    - poverty
+    - natural disasters
+  small_problems:
+    - dirty hands
+    - dirty dishes
+    - your disgusting eyebrows
+    - barely audible sighs at the dinner table
+    - the sound of your voice
+    - longing gazes
+drawing:
+  start:
+    - reaches for a card
+    - grabs a card
+    - reaches in and snags a card
+    - taps on a card
+    - double clicks on a card
+  too_soon: # triggers if you roll within 30 sec of last draw
+    - pulls it up before it's ready, and only gets a glimpse of ${this.t('drawing.scribbled')} _'${this.t('bad_project_ideas.base')}'_ before ${this.t('drawing.disappears')}
+    - "_${this.t('bad_project_ideas.base')}_?! before you can ponder what that means, ${this.t('drawing.disappears')}!"
+  too_many: # triggers if already at max hand size
+    - ${this.t('hand.full')}
+    - "_${this.t('bad_project_ideas.base')}_?! before you can ponder what that means, ${this.t('drawing.disappears')}! ${this.t('hand.full')}"
+    - pulls it up before it's ready, and only gets a glimpse of ${this.t('drawing.scribbled')} _'${this.t('bad_project_ideas.base')}'_ before ${this.t('drawing.disappears')}. ${this.t('hand.full')}
+  no_dice: # random chance, based on user count
+    - you try to pick up a card, but it flutters away before you can grab it
+    - "_${this.t('bad_project_ideas.base')}_?! before you can ponder what that means, ${this.t('drawing.disappears')}! Better luck next time?"
+    - you reach out to grab another card, but it slips through your fingers
+    - you reach out to grab another card, but it's just out of reach
+    - you reach out to grab another card, but see ${this.t('drawing.scribbled')} cryptically staring back at you! You quickly pull your hand back, but realize that might have been just a trick of the light.
+  disappears:
+    - the card disappears
+    - the card vanishes
+    - the card is gone
+    - the card is no more
+    - it goes up in a puff of smoke
+    - it evaporates
+    - it cracks and chips into dust
+    - the card heats up and melts
+    - the card is set ablaze, nearly scorching their hand
+    - a jolt of static zaps out and scorches the card
+  scribbled:
+    - a scratched out note
+    - a crossed out scribble
+    - a smudged ink mark
+    - a hastily erased message
+    - a coffee-stained blot
+    - a tear-stained smear
+    - a hastily scribbled doodle
+    - a water-damaged scrawl
+    - a hastily crossed out text
+inspect:
+  no_cards: ${this.t('hand.empty')}
+hand:
+  empty:
+    - you look at your hands... they're empty
+    - you look at your hands... you have 2 of them still...
+    - you look at your hands... are you... ok?
+    - you look at your hands... might want to consider washing them. you should probably DRAW.
+    - you look at your hands... they're suspiciously clean. you should probably DRAW.
+    - you look at your hands... they're not even sticky anymore. you should probably DRAW.
+    - you look at your hands... they're just hands, doing hand things. you should probably DRAW.
+  count:
+    - you look at your hands... you have ${this.count} ${this.pluralCard}
+    - you look at your hands... you have ${this.count} ${this.pluralCard} in your hand
+    - you now have ${this.count} ${this.pluralCard} in your hand
+  full:
+    - your hand is full– maybe invite some more people in?
+    - you'll gain strength in numbers– get more people to DRAW.
+  list:
+    - you look at your hands... you have ${this.cards}
+    - you gaze at the cards in your hand... ${this.cards}
+    - you stare at the cards in your hand... ${this.cards}... wait, did they just stare back at you?
+    - you look at the cards in your hand... ${this.cards}... they seem to shimmer and shift
+    - you glance at the cards in your hand... ${this.cards}... they seem to glow and pulse
+    - you look at the cards in your hand... ${this.cards}... and you hear a faint whisper...
+    - you examine the cards in your hand... ${this.cards}... they feel warm to the touch
+    - you hold the cards in your hand... ${this.cards}... they seem to vibrate with energy
+    - you look at your hands... ${this.cards}... the symbols seem to move when you're not looking
+    - you check the cards in your hand... ${this.cards}... they emit a soft, otherworldly glow
+    - you look at your hands... ${this.cards}... the edges seem to blur and shift
+    - you gaze at the cards... ${this.cards}... they feel heavier than they should
+    - you look at your hands... ${this.cards}... the ink seems to flow like liquid
+    - you examine the cards... ${this.cards}... they whisper secrets in an ancient tongue
+    - you hold the cards... ${this.cards}... they pulse with an unknown power
+  emoji:
+    - raised_hands
+    - handshake
+    - ok_hand
+    - open_hands
+    - spock-hand
+    - "+1"
+    - call_me_hand
 cards:
   the_fool:
     name: The Fool
@@ -6,7 +135,7 @@ cards:
       - Watch for new projects and new beginnings
       - Prepare to take something on faith
       - Something new comes your way; go for it
-    requirements: >
+    requirements: |
       do one of the following:
       - write in a language you've never written in before
       - if you've never drawn, make art for your project
@@ -19,23 +148,23 @@ cards:
       - You feel the inspiration of a diva rushing through your vocal chords
       - A pop-icon stands in your way 
       - You feel a mysterious energy fill the chat room
-    requirements: >
+    requirements: |
       do one of the following:
-      - write a voice processor web app
+      - use voice processing
       - create a pop culture point and click adventure 
       - create a collaborative mr./mrs./mx. potatoes web app 
   the_chariot:
     name: "The Chariot"
-    arcanum: "Major"
+    arcanum: major
     flavor:
-      - You've been blessed by terry Davis
+      - You've been blessed by Terry Davis
       - An FBI agent is reading this  
+      - You bask in the holy interpretation (and compliation) of your code
       - C just wasn't holy enough for you
-    requirements: >
+    requirements: |
       do one of the following:
-      - Write a Holy C hello world 
-      - Speed run temple OS installation and post on youtube
-      - Create an app that changes your OS system language each time you login... the modern tower of babylon
+      - write an app in Holy C
+      - application of babylon– your app must start in a different language each time you boot
   the_magician:
     name: The Magician
     arcanum: major
@@ -43,8 +172,10 @@ cards:
       - Your current situation must be seen as one element of a much larger plan
       - A powerful ally is on your side
       - You have the ability to make something happen
-    requirements: >
+    requirements: |
       do one of the following:
+      - get users
+      - build a tool that someone else builds their own project with
       TODO
   wheel_of_fortune:
     name: The Wheel of Fortune
@@ -65,7 +196,7 @@ cards:
       - You're strong enough to handle anything
       - You're not afraid to ask for help
       - You're not afraid to take risks
-    requirements: >
+    requirements: |
       do one of the following:
       - make a hardware project
       - write in a strongly typed language
@@ -73,36 +204,61 @@ cards:
   the_hanged_man:
     name: The Hanged Man
     arcanum: major
-    requirements: >
-      burn a card & lose the benefit. TODO how this will work
+    flavor:
+      - Time for a new perspective
+      - Might be time to take a step back and look at the big picture
+    requirements: |
+      don't work for more that 2 hours at a time
   the_tower: # renamed to the monolith
     name: The Monolith
     arcanum: major
-    requirements: >
+    requirements: |
       do one of the following:
       - write all your code in a single file
+      - support any language (localization)
 
   the_sea:
     name: The Deep Sea
     arcanum: hacker
-    requirements: >
+    flavor:
+      - You're not afraid to dive deep into a project
+      - You feel yourself sinking into the details
+    requirements: |
+      do one of the following:
+      - work on a project for at least 8 hours in a day
+      - work on a project for at least 16 hours in a week
   the_stoat:
-    name: The stoat
+    # references https://inscryption.fandom.com/wiki/Stoat
+    # & https://inscryption.fandom.com/wiki/Sacrifices_Must_Be_Made
+    name: The Stoat
+    flavor:
+      - stotal misplay
+      - total misplay
+      - sacrifices must be made
+    requirements: |
+      Take a project you never finished. Ship it without the total linecount of code changing. You may need to remove some features.
   baby_dino:
     name: Baby Dino
     arcanum: hacker
-    requirements: >
+    requirements: |
+      do one of the following:
+      - animate a talking character
+      - include a shop or marketplace in your project
   raccoon:
     name: Trash Racc
     arcanum: hacker
-    requirements: >
+    requirements: |
+      do one of the following:
+      - solder
+      - construct something out of wood
+      - design a pcb
   the_mycologist:
     name: The Mycologist
     arcanum: hacker
-    requirements: >
+    requirements: |
       pick up and old project of yours and do one of the following:
-      - add a new feature
-      - take a feature and put it into a new project
+      - add a new feature to an old project
+      - take an old feature and put it into a new project
   the_broken_keyboard:
     name: th brken keybard
     arcanum: hacker
@@ -110,4 +266,4 @@ cards:
       - keyboard not detected. press f1 to continue
       - myspacebarisbroken
     requirements: >
-      Choose a letter on your keyboard. You can't use it anymore. Not in your project. Not in slack.
+      Choose a letter on your keyboard. You can't use it anymore. Not in your project. Not in slack. Nowhere.
