@@ -51,13 +51,19 @@ drawing:
     - reaches in and snags a card
     - taps on a card
     - double clicks on a card
-  too_soon:
+  too_soon: # triggers if you roll within 30 sec of last draw
     - pulls it up before it's ready, and only gets a glimpse of ${this.t('drawing.scribbled')} _'${this.t('bad_project_ideas.base')}'_ before ${this.t('drawing.disappears')}
     - "_${this.t('bad_project_ideas.base')}_?! before you can ponder what that means, ${this.t('drawing.disappears')}!"
-  too_many:
+  too_many: # triggers if already at max hand size
     - ${this.t('hand.full')}
     - "_${this.t('bad_project_ideas.base')}_?! before you can ponder what that means, ${this.t('drawing.disappears')}! ${this.t('hand.full')}"
-    - pulls it up before it's ready, and only gets a glimpse of ${this.t('drawing.scribbled')} _'${this.t('bad_project_ideas.base')}'_ before ${this.t('drawing.disappears')} ${this.t('hand.full')}
+    - pulls it up before it's ready, and only gets a glimpse of ${this.t('drawing.scribbled')} _'${this.t('bad_project_ideas.base')}'_ before ${this.t('drawing.disappears')}. ${this.t('hand.full')}
+  no_dice: # random chance, based on user count
+    - you try to pick up a card, but it flutters away before you can grab it
+    - "_${this.t('bad_project_ideas.base')}_?! before you can ponder what that means, ${this.t('drawing.disappears')}! Better luck next time?"
+    - you reach out to grab another card, but it slips through your fingers
+    - you reach out to grab another card, but it's just out of reach
+    - you reach out to grab another card, but see ${this.t('drawing.scribbled')} cryptically staring back at you! You quickly pull your hand back, but realize that might have been just a trick of the light.
   disappears:
     - the card disappears
     - the card vanishes
@@ -151,8 +157,9 @@ cards:
     name: "The Chariot"
     arcanum: major
     flavor:
-      - You've been blessed by terry Davis
+      - You've been blessed by Terry Davis
       - An FBI agent is reading this  
+      - You bask in the holy interpretation (and compliation) of your code
       - C just wasn't holy enough for you
     requirements: |
       do one of the following:
@@ -167,7 +174,19 @@ cards:
       - You have the ability to make something happen
     requirements: |
       do one of the following:
-      TODO
+      - get users
+      - build a tool that someone else builds their own project with
+  wheel_of_fortune:
+    name: The Wheel of Fortune
+    arcanum: major
+    flavor:   
+      - Some events are in the core of your cpu
+      - You feel as if you are approaching a segfault
+      - You try to transpile your index.html to c
+    requirements: >
+      do one of the following:
+      - core functionality must be based on randomness
+      - involve fortune telling
   strength:
     name: Strength
     arcanum: major
@@ -180,23 +199,46 @@ cards:
       - make a hardware project
       - write in a strongly typed language
       - once installed your app cannot be uninstalled
-  # the_hanged_man:
-  #   name: The Hanged Man
-  #   arcanum: major
-  #   requirements: >
-  #     burn a card & lose the benefit. TODO how this will work
+  the_hanged_man:
+    name: The Hanged Man
+    arcanum: major
+    flavor:
+      - Time for a new perspective
+      - Might be time to take a step back and look at the big picture
+    requirements: |
+      don't work for more that 2 hours at a time
   the_tower: # renamed to the monolith
     name: The Monolith
     arcanum: major
+    flavor: # ambition constructed on false pretenses
+      - You stand tall, unbending
     requirements: |
       do one of the following:
       - write all your code in a single file
       - support any language (localization)
-
-  # the_sea:
-  #   name: The Deep Sea
-  #   arcanum: hacker
-  #   requirements: >
+  the_lovers:
+    name: The Lovers
+    arcanum: major
+    flavor:
+      - You feel a deep connection forming between disparate parts
+      - Two systems yearn to be united
+      - The boundaries between systems begin to blur
+      - You sense the potential for harmony between different components
+    requirements: |
+      do one of the following:
+      - write a frontend and a backend for your project. Have them connect
+      - write a bot that interfaces with other bots via slack / discord
+      - make api calls to another person's project
+  the_sea:
+    name: The Deep Sea
+    arcanum: hacker
+    flavor:
+      - You're not afraid to dive deep into a project
+      - You feel yourself sinking into the details
+    requirements: |
+      do one of the following:
+      - work on a project for at least 8 hours in a day
+      - work on a project for at least 16 hours in a week
   the_stoat:
     # references https://inscryption.fandom.com/wiki/Stoat
     # & https://inscryption.fandom.com/wiki/Sacrifices_Must_Be_Made
@@ -227,16 +269,30 @@ cards:
     arcanum: hacker
     requirements: |
       pick up and old project of yours and do one of the following:
-      - add a new feature
-      - take a feature and put it into a new project
+      - add a new feature to an old project
+      - take an old feature and put it into a new project
   the_broken_keyboard:
     name: th brken keybard
     arcanum: hacker
     flavor:
       - keyboard not detected. press f1 to continue
       - myspacebarisbroken
-    requirements: >
-      Choose a letter on your keyboard. You can't use it anymore. Not in your project. Not in slack. Nowhere.
+    requirements: |
+      Choose a letter on your keyboard. You can't use it anymore.
+      Not in your project.
+      Not in slack.
+      Nowhere.
+  the_architect:
+    name: The Architect
+    arcanum: hacker
+    flavor:
+      - You see before you a canvas to build upon
+      - There is a void in the world that needs to be filled
+    requirements: |
+      do one of the following:
+      - build a 3d model as your hardware project (must be printable & on thingiverse/printables)
+      - build an executable for multiple architectures (ARM/x86/MIPS oh my!)
+      - build using a framework that you haven't used before
   togetherness:
     name: Togetherness
     arcanum: hacker

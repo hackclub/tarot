@@ -1,6 +1,5 @@
 .env
 node_modules
-.rootmessage
 # ignore all files but .keep in the kv directory
 kv/*
 !kv/.keep

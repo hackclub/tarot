@@ -16,11 +16,8 @@ export class SlackBot {
 
   async loadRootMessage() {
     try {
-      const file = Bun.file('.rootmessage')
-      if (await file.exists()) {
-        const text = await file.text()
-        return JSON.parse(text)
-      }
+      const rootMessage = await kv.get('root_message', true)
+      return rootMessage
     } catch (error) {
       console.error('Error loading root message:', error)
     }
@@ -29,17 +26,38 @@ export class SlackBot {
 
   saveRootMessage() {
     try {
-      Bun.write('.rootmessage', JSON.stringify(this.rootMessage))
+      kv.set('root_message', this.rootMessage, null, true)
     } catch (error) {
       console.error('Error saving root message:', error)
     }
   }
 
-  async sendMessage(message, threadTs = null, username = null) {
+  async sendMessage(message, threadTs = null, username = null, contextMessage = null) {
     try {
       const messageParams = {
         channel: this.channelId,
         text: message
+      }
+
+      if (contextMessage) {
+        messageParams.blocks = [
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: message
+            }
+          },
+          {
+            type: 'context',
+            elements: [
+              {
+                type: 'mrkdwn',
+                text: contextMessage
+              }
+            ]
+          }
+        ]
       }
 
       if (threadTs) {
@@ -138,11 +156,12 @@ export class SlackBot {
     ]
 
     for (const action of specialActions) {
-      console.log("Checking action", action, userCounts, action.count, await kv.get(action.flag, true))
-      if (userCounts >= action.count && !(await kv.get(action.flag, true))) {
+      const flagKey = 'flag_' + action.flag
+      console.log("Checking action", action, userCounts, action.count, await kv.get(flagKey, true))
+      if (userCounts >= action.count && !(await kv.get(flagKey, true))) {
         setTimeout(() => {
           action.action()
-          kv.set(action.flag, true, null, true)
+          kv.set(flagKey, true, null, true)
         }, 5 * 1000)
       }
     }
@@ -160,6 +179,7 @@ export class SlackBot {
 
     try {
       let message = userMention + ' ' + transcript('drawing.start') + '...'
+      let contextMessage = ''
       console.log("message", message)
 
       // get the user's hand
@@ -170,31 +190,44 @@ export class SlackBot {
 
       if (userHand.length >= maxHandSize) {
         message += ' ' + transcript('drawing.too_many')
+        if (maxHandSize == 5) {
+          contextMessage = "You're at the limit of how many cards you can hold in your hand!"
+        } else {
+          contextMessage = "Psst... you can hold more cards if more people join!"
+        }
       } else {
         // Check rate limiting
         const lastDraw = await kv.get(`card_draw:${username}`)
         if (lastDraw) {
           message += ' ' + transcript('drawing.too_soon')
+          contextMessage = "You're drawing too quickly! Slow down and try again."
         } else {
           kv.set(`card_draw:${username}`, true, 30 * 1000)
 
-          const allCards = transcript('cards')
-          const cardKeys = Object.keys(allCards)
-          const availableCards = cardKeys.filter(key => !userHand.includes(key))
-          const randomCard = availableCards[Math.floor(Math.random() * availableCards.length)]
-          userHand.push(randomCard)
-          kv.set(`user_hand:${username}`, userHand, null, true)
+          // If it's their first draw (empty hand) or they pass the probability check
+          if (userHand.length === 0 || Math.random() < (3 / Math.min(userCounts, 100))) {
+            const allCards = transcript('cards')
+            const cardKeys = Object.keys(allCards)
+            const availableCards = cardKeys.filter(key => !userHand.includes(key))
+            const randomCard = availableCards[Math.floor(Math.random() * availableCards.length)]
+            userHand.push(randomCard)
+            kv.set(`user_hand:${username}`, userHand, null, true)
 
-          const chosenCard = allCards[randomCard]
-          const flavor = transcript('cards.' + randomCard + '.flavor')
+            const chosenCard = allCards[randomCard]
+            const flavor = transcript('cards.' + randomCard + '.flavor')
 
-          message += ` and draws *${chosenCard.name}*!\n_${flavor}_\n\nRequirements: \`\`\`${chosenCard.requirements}\`\`\``
+            message += ` and draws *${chosenCard.name}*!\n_${flavor}_\n\nRequirements: \`\`\`${chosenCard.requirements}\`\`\``
+            contextMessage = "Congrats!"
 
-          // include user's hand count
-          if (userHand.length == maxHandSize) {
-            message += ' ' + transcript('hand.full')
+            // include user's hand count
+            if (userHand.length == maxHandSize) {
+              message += ' ' + transcript('hand.full')
+            } else {
+              message += ' ' + transcript('hand.count', { count: userHand.length, pluralCard: userHand.length == 1 ? 'card' : 'cards' })
+            }
           } else {
-            message += ' ' + transcript('hand.count', { count: userHand.length, pluralCard: userHand.length == 1 ? 'card' : 'cards' })
+            message += ' ' + transcript('drawing.no_dice')
+            contextMessage = "Better luck next DRAW"
           }
         }
       }
@@ -204,7 +237,7 @@ export class SlackBot {
       await Promise.all([
         this.react(messageTs, 'beachball', false),
         this.react(messageTs, 'white_check_mark', true),
-        this.sendMessage(message, messageTs)
+        this.sendMessage(message, messageTs, null, contextMessage)
       ])
       console.timeEnd('respondToMessage')
     } catch (error) {
