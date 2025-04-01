@@ -16,11 +16,8 @@ export class SlackBot {
 
   async loadRootMessage() {
     try {
-      const file = Bun.file('.rootmessage')
-      if (await file.exists()) {
-        const text = await file.text()
-        return JSON.parse(text)
-      }
+      const rootMessage = await kv.get('root_message', true)
+      return rootMessage
     } catch (error) {
       console.error('Error loading root message:', error)
     }
@@ -29,7 +26,7 @@ export class SlackBot {
 
   saveRootMessage() {
     try {
-      Bun.write('.rootmessage', JSON.stringify(this.rootMessage))
+      kv.set('root_message', this.rootMessage, null, true)
     } catch (error) {
       console.error('Error saving root message:', error)
     }
