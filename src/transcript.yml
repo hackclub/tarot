@@ -277,8 +277,11 @@ cards:
     flavor:
       - keyboard not detected. press f1 to continue
       - myspacebarisbroken
-    requirements: >
-      Choose a letter on your keyboard. You can't use it anymore. Not in your project. Not in slack. Nowhere.
+    requirements: |
+      Choose a letter on your keyboard. You can't use it anymore.
+      Not in your project.
+      Not in slack.
+      Nowhere.
   the_architect:
     name: The Architect
     arcanum: hacker
