@@ -325,4 +325,50 @@ cards:
       - does nothing?
     requirements: |
       Does nothing :hehe:
-  
+  opposite_day:
+    name: Opposite Day
+    arcanum: buffoon
+    flavor:
+      - what a terrible day!
+      - this is normal
+    requirements: |
+      remix an existing ship but it must do the exact opposite of what it was intended to do
+  dracula:
+    name: Dracula
+    arcanum: buffoon
+    flavor:
+      - yummy blood
+      - you feel a growing thirst for blood
+      - the name "draaacuuuulaaaaa" echoes in your mind
+    requirements: |
+      make a project that uses way too many unnecessary resources or libraries
+  sad_clown:
+    name: Sad Clown
+    arcanum: buffoon
+    flavor:
+      - "i'm so bad at coming up with these :heavysob:"
+      - "why did the chicken cross the road? idk :heavysob:"
+      - "wanna hear a joke? it's me!"
+    requirements: |
+      do one of the following:
+        - use high contrast colors in your project
+        - include terrible puns
+        - make clown noises
+  the_audiophile:
+    name: The Audiophile
+    arcanum: buffoon
+    flavor:
+      - "now complete with surround sound!"
+      - "*the THX sound plays*"      
+    requirements: |
+      do one of the following:
+        - your project must play elevator music
+        - your project must blast music at 100% volume
+  flower_pot:
+    name: Flower Pot
+    arcanum: buffoon
+    flavor:
+      - "lotta flowers in here"
+      - "one pot, many flowers"
+    requirements: |
+      your project must use 3 or more different programming languages
