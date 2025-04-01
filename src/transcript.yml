@@ -265,6 +265,14 @@ cards:
       - solder
       - construct something out of wood
       - design a pcb
+  the_pokemon:
+    name: The starter
+    arcanum: hacker
+    flavor: Gotta catch 'em all! (lawsuits that is)
+    requirements: |
+      Do one of the following:
+      - use something copyrighted in your project in core functionality of your project
+      - include collectibles in your project
   the_mycologist:
     name: The Mycologist
     arcanum: hacker
