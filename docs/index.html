@@ -291,6 +291,8 @@
         button.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`;
       } else {
         button.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
+        // Restart render loop when unpausing
+        window.shaderCanvas.render();
       }
       // The shader.js file should check this global variable
       window.isShaderPaused = isShaderPaused;
@@ -352,11 +354,6 @@
         }, offset);
       });
     }
-
-    // Initialize when the DOM is loaded
-    document.addEventListener('DOMContentLoaded', () => {
-      // Initialization moved to cards.js
-    });
   </script>
   <title>10 days of tarot</title>
 </head>
@@ -379,7 +376,7 @@
       <h3>Gain your karma</h3>
       <p>
         Build a project to gain karma. Each hour you spend working on a project, you get one karma.
-        You can log your time using <a href="https://hackatime.hackclub.com">Hackatime</a>, or in <span class="scrambled" data-text="_____ _______"></span>.
+        You can log your time using <a href="https://hackatime.hackclub.com" target="_blank">Hackatime</a>, or in <span class="scrambled" data-text="_____ _______"></span>.
       </p>
       <p>
         Every card has a karma requirement, and it will only contribute to your karma if you can show you met it.
