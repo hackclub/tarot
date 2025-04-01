@@ -265,3 +265,14 @@ cards:
       - myspacebarisbroken
     requirements: >
       Choose a letter on your keyboard. You can't use it anymore. Not in your project. Not in slack. Nowhere.
+  the_architect:
+    name: The Architect
+    arcanum: hacker
+    flavor:
+      - You see before you a canvas to build upon
+      - There is a void in the world that needs to be filled
+    requirements: |
+      do one of the following:
+      - build a 3d model as your hardware project (must be printable & on thingiverse/printables)
+      - build an executable for multiple architectures (ARM/x86/MIPS oh my!)
+      - build using a framework that you haven't used before
