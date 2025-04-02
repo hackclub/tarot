@@ -88,72 +88,76 @@ export class SlackBot {
     }
   }
 
-  async initialMessage() {
-    try {
-      // Send initial message with black joker
-      const result = await this.sendMessage('🃏')
+  // async initialMessage() {
+  //   try {
+  //     // Send initial message with black joker
+  //     const result = await this.sendMessage('🃏')
       
-      // Wait 3 seconds
-      await new Promise(resolve => setTimeout(resolve, 15 * 1000))
+  //     // Wait 3 seconds
+  //     await new Promise(resolve => setTimeout(resolve, 15 * 1000))
       
-      // Send follow-up message in thread
-      await this.sendMessage("ooooh! what's this deck of cards doing here?", result.ts, 'The Fool')
+  //     // Send follow-up message in thread
+  //     await this.sendMessage("ooooh! what's this deck of cards doing here?", result.ts, 'The Fool')
 
-      // Wait 3 seconds
-      await new Promise(resolve => setTimeout(resolve, 3000))
+  //     // Wait 3 seconds
+  //     await new Promise(resolve => setTimeout(resolve, 3000))
 
-      // Send follow-up message in thread
-      await this.sendMessage("I kinda want to take one...", result.ts, 'The Fool')
+  //     // Send follow-up message in thread
+  //     await this.sendMessage("I kinda want to take one...", result.ts, 'The Fool')
 
-      // Wait 3 seconds
-      await new Promise(resolve => setTimeout(resolve, 3000))
+  //     // Wait 3 seconds
+  //     await new Promise(resolve => setTimeout(resolve, 3000))
 
-      // Send follow-up message in thread
-      await this.sendMessage("DRAW", result.ts, 'The Fool')
+  //     // Send follow-up message in thread
+  //     await this.sendMessage("DRAW", result.ts, 'The Fool')
 
-      // Wait 3 seconds
-      await new Promise(resolve => setTimeout(resolve, 3000))
+  //     // Wait 3 seconds
+  //     await new Promise(resolve => setTimeout(resolve, 3000))
       
-      return result
-    } catch (error) {
-      console.error('Error sending initial message:', error)
-      throw error
-    }
-  }
+  //     return result
+  //   } catch (error) {
+  //     console.error('Error sending initial message:', error)
+  //     throw error
+  //   }
+  // }
 
   async drawCard(messageTs, username, userMention) {
     await this.react(messageTs, 'beachball')
 
     console.time('getUserCounts')
-    const userCounts = await getUserCounts()
+    // const userCounts = await getUserCounts()
     console.timeEnd('getUserCounts')
 
     console.log("userCounts", userCounts)
 
-    let prevUserCount = await kv.get('user_count', true)
+    // let prevUserCount = await kv.get('user_count', true)
 
-    if (!prevUserCount) {
-      prevUserCount = 0
-    }
+    // if (!prevUserCount) {
+    //   prevUserCount = 0
+    // }
 
-    let maxHandSize = await kv.get('max_hand_size', true)
-    if (!maxHandSize) {
-      maxHandSize = 2
-      kv.set('max_hand_size', maxHandSize, null, true)
-    }
-    let prevMaxHandSize = maxHandSize
+    // hardcoded now that the launch is over
+    const userCounts = 100
+    const maxHandSize = 5
 
-    const specialActions = [
-      {
-        count: 4,
-        flag: 'tutorial_inspect',
-        action: async () => {
-          // the fool posts "wait, what did I have?"
-          await this.sendMessage("wait, what did I have?", messageTs, 'The Fool')
-          await new Promise(resolve => setTimeout(resolve, 3000))
-          await this.sendMessage("INSPECT", messageTs, 'The Fool')
-        }
-      },
+    // let maxHandSize = await kv.get('max_hand_size', true)
+    // if (!maxHandSize) {
+    //   maxHandSize = 2
+    //   kv.set('max_hand_size', maxHandSize, null, true)
+    // }
+    // let prevMaxHandSize = maxHandSize
+
+    // const specialActions = [
+    //   {
+    //     count: 4,
+    //     flag: 'tutorial_inspect',
+    //     action: async () => {
+    //       // the fool posts "wait, what did I have?"
+    //       await this.sendMessage("wait, what did I have?", messageTs, 'The Fool')
+    //       await new Promise(resolve => setTimeout(resolve, 3000))
+    //       await this.sendMessage("INSPECT", messageTs, 'The Fool')
+    //     }
+    //   },
       // {
       //   count: 12,
       //   key: 'tutorial_discard',
@@ -163,50 +167,50 @@ export class SlackBot {
       //     await this.sendMessage("DISCARD", messageTs, 'The Fool')
       //   }
       // },
-      {
-        count: 20,
-        flag: 'deck_grows_1',
-        action: async () => {
-          maxHandSize = 3
-          await kv.set('max_hand_size', maxHandSize, null, true)
-          await this.sendMessage("As more crowd gathers, the deck grows larger. You can now hold 3 cards.", messageTs)
-        }
-      },
-      {
-        count: 35,
-        flag: 'tutorial_hand',
-        action: async () => {
-          await this.sendMessage("Wait, what's this in my hand?", messageTs)
-          await new Promise(resolve => setTimeout(resolve, 3000))
-          await this.sendMessage("HAND", messageTs, 'The Fool')
-        }
-      },
-      {
-        count: 50,
-        flag: 'deck_grows_2',
-        action: async () => {
-          maxHandSize = 4
-          await kv.set('max_hand_size', maxHandSize, null, true)
-          await this.sendMessage("As more crowd gathers, the deck grows larger... you think you can hold more cards?", messageTs)
-        }
-      },
-      {
-        count: 70,
-        flag: 'deck_grows_3',
-        action: async () => {
-          maxHandSize = 5
-          await kv.set('max_hand_size', maxHandSize, null, true)
-          await this.sendMessage("As more crowd gathers, the deck grows larger.... you can now hold 5 cards", messageTs)
-        }
-      },
-      {
-        count: 78,
-        flag: 'ending',
-        action: async () => {
-          await this.sendMessage("One animated card is now laid out on the table, and on it you see the depiction of a tassle-hatted fool juggling and dancing around.... it opens it's mouth as if to speak and words show up on the bottom of the card", messageTs)
-        }
-      }
-    ]
+    //   {
+    //     count: 20,
+    //     flag: 'deck_grows_1',
+    //     action: async () => {
+    //       maxHandSize = 3
+    //       await kv.set('max_hand_size', maxHandSize, null, true)
+    //       await this.sendMessage("As more crowd gathers, the deck grows larger. You can now hold 3 cards.", messageTs)
+    //     }
+    //   },
+    //   {
+    //     count: 35,
+    //     flag: 'tutorial_hand',
+    //     action: async () => {
+    //       await this.sendMessage("Wait, what's this in my hand?", messageTs)
+    //       await new Promise(resolve => setTimeout(resolve, 3000))
+    //       await this.sendMessage("HAND", messageTs, 'The Fool')
+    //     }
+    //   },
+    //   {
+    //     count: 50,
+    //     flag: 'deck_grows_2',
+    //     action: async () => {
+    //       maxHandSize = 4
+    //       await kv.set('max_hand_size', maxHandSize, null, true)
+    //       await this.sendMessage("As more crowd gathers, the deck grows larger... you think you can hold more cards?", messageTs)
+    //     }
+    //   },
+    //   {
+    //     count: 70,
+    //     flag: 'deck_grows_3',
+    //     action: async () => {
+    //       maxHandSize = 5
+    //       await kv.set('max_hand_size', maxHandSize, null, true)
+    //       await this.sendMessage("As more crowd gathers, the deck grows larger.... you can now hold 5 cards", messageTs)
+    //     }
+    //   },
+    //   {
+    //     count: 78,
+    //     flag: 'ending',
+    //     action: async () => {
+    //       await this.sendMessage("One animated card is now laid out on the table, and on it you see the depiction of a tassle-hatted fool juggling and dancing around.... it opens it's mouth as if to speak and words show up on the bottom of the card", messageTs)
+    //     }
+    //   }
+    // ]
 
     // these trigger on all requests once we have the count worth of users
     let regularActions = [
@@ -236,16 +240,16 @@ export class SlackBot {
       },
     ]
 
-    for (const action of specialActions) {
-      const flagKey = 'flag_' + action.flag
-      console.log("Checking action", action, userCounts, action.count, await kv.get(flagKey, true))
-      if (userCounts >= action.count && !(await kv.get(flagKey, true))) {
-        setTimeout(() => {
-          action.action()
-          kv.set(flagKey, true, null, true)
-        }, 5 * 1000)
-      }
-    }
+    // for (const action of specialActions) {
+    //   const flagKey = 'flag_' + action.flag
+    //   console.log("Checking action", action, userCounts, action.count, await kv.get(flagKey, true))
+    //   if (userCounts >= action.count && !(await kv.get(flagKey, true))) {
+    //     setTimeout(() => {
+    //       action.action()
+    //       kv.set(flagKey, true, null, true)
+    //     }, 5 * 1000)
+    //   }
+    // }
 
     for (const action of regularActions) {
       if (userCounts >= action.count) {
@@ -253,19 +257,19 @@ export class SlackBot {
       }
     }
 
-    kv.set('user_count', userCounts, null, true)
+    // kv.set('user_count', userCounts, null, true)
     // only set this if the max_hand_size has increased to prevent race conditions
-    if (maxHandSize > prevMaxHandSize) {
-      kv.set('max_hand_size', maxHandSize, null, true)
-    }
+    // if (maxHandSize > prevMaxHandSize) {
+    //   kv.set('max_hand_size', maxHandSize, null, true)
+    // }
 
     try {
       let message = userMention + ' ' + transcript('drawing.start') + '...'
       let contextMessage = ''
-      console.log("message", message)
+      // console.log("message", message)
 
       // get the user's hand
-      let userHand = await kv.get(`user_hand:${username}`, true)
+      let userHand = await getHand(username)
       if (!userHand) {
         userHand = []
       }
@@ -293,8 +297,7 @@ export class SlackBot {
             const availableCards = cardKeys.filter(key => !userHand.includes(key))
             const randomCard = availableCards[Math.floor(Math.random() * availableCards.length)]
             userHand.push(randomCard)
-            kv.set(`user_hand:${username}`, userHand, null, true)
-
+            addToHand(username, randomCard)
             const chosenCard = allCards[randomCard]
             const flavor = transcript('cards.' + randomCard + '.flavor')
 
@@ -341,12 +344,12 @@ export class SlackBot {
     }
   }
 
-  async showHand(messageTs, username, userMention) {
+  async showHand(messageTs, username, userMention, targetUsername = null) {
     try {
       let [_reaction, _time, userHand] = await Promise.all([
         this.react(messageTs, 'beachball'),
         new Promise(resolve => setTimeout(resolve, 1000)),
-        getHand(username)
+        getHand(targetUsername || username)
       ])
 
       if (!userHand) {
@@ -354,6 +357,10 @@ export class SlackBot {
       }
       
       let response = userMention + " "
+      if (targetUsername) {
+        response += `is looking at <@${targetUsername}>'s hand: `
+      }
+      
       if (userHand.length === 0) {
         response += transcript('hand.empty')
       } else {
@@ -362,8 +369,10 @@ export class SlackBot {
         response += transcript('hand.list', { cards: handNames })
       }
 
-      // Add link to view hand on website
-      response += `\n\nView your hand at: <https://hack.club/tarot/?slack_id=${username}|hack.club/tarot>`
+      // Only show the link if viewing your own hand
+      if (!targetUsername) {
+        response += `\n\nView your hand at: <https://hack.club/tarot/?slack_id=${username}|hack.club/tarot>`
+      }
 
       await Promise.all([
         this.react(messageTs, 'beachball', false),
@@ -386,7 +395,8 @@ export class SlackBot {
       }
       
       if (event.thread_ts === this.rootMessage?.messageTs) {
-        const command = event.text.trim().toUpperCase()
+        const text = event.text.trim()
+        const command = text.toUpperCase()
         const username = event.bot_id ? 'The Fool' : event.user
         const userMention = username.startsWith('U') ? `<@${username}>` : username
 
@@ -394,9 +404,12 @@ export class SlackBot {
           console.time('drawCard')
           await this.drawCard(event.ts, username, userMention)
           console.timeEnd('drawCard')
-        } else if (command === 'HAND') {
+        } else if (command.startsWith('HAND')) {
           console.time('showHand')
-          await this.showHand(event.ts, username, userMention)
+          // Check if there's a mention in the command
+          const mentionMatch = text.match(/HAND\s+<@([A-Z0-9]+)>/i)
+          const targetUsername = mentionMatch ? mentionMatch[1] : null
+          await this.showHand(event.ts, username, userMention, targetUsername)
           console.timeEnd('showHand')
         }
       } else {

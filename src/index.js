@@ -47,10 +47,10 @@ app.listen(port, async () => {
   console.log(transcript('startup', { port }))
 
   // Only send initial message if no root message exists
-  if (!slackBot.getRootMessage()) {
-    console.log('No existing root message found, sending initial message...')
-    await slackBot.initialMessage()
-  } else {
-    console.log('Using existing root message:', slackBot.getRootMessage())
-  }
+  // if (!slackBot.getRootMessage()) {
+  //   console.log('No existing root message found, sending initial message...')
+  //   await slackBot.initialMessage()
+  // } else {
+  //   console.log('Using existing root message:', slackBot.getRootMessage())
+  // }
 }) 
