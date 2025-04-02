@@ -8,7 +8,7 @@ const port = process.env.PORT || 3030
 
 // Initialize Slack bot with your token and channel ID
 const slackToken = process.env.SLACK_BOT_TOKEN
-const slackChannelId = 'C0266FRGT'
+const slackChannelId = 'C08KN8PKPE3'
 
 if (!slackToken) {
   console.error('Missing required environment variable: SLACK_BOT_TOKEN')
@@ -28,6 +28,7 @@ app.get('/up', (req, res) => {
 // Slack events endpoint
 app.post('/slack/events', async (req, res) => {
   
+  console.log('Received Slack event:', req.body)
   // Handle Slack URL verification
   if (req.body.type === 'url_verification') {
     console.log('Handling URL verification')

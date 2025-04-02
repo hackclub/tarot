@@ -1,8 +1,7 @@
 import { WebClient } from '@slack/web-api'
 import { transcript } from './transcript.js'
 import { kv } from './kv.js'
-import getUserCounts from './user_counts.js'
-import { getHand } from './airtable.js'
+import { getHand, addToHand } from './airtable.js'
 
 export class SlackBot {
   constructor(token, channelId) {
@@ -185,20 +184,13 @@ export class SlackBot {
 
       // get the user's hand
       let userHand = await getHand(username)
-      if (!userHand) {
-        userHand = []
-      }
 
       if (userHand.length >= maxHandSize) {
         message += ' ' + transcript('drawing.too_many')
-        if (maxHandSize == 5) {
-          contextMessage = "You're at the limit of how many cards you can hold in your hand!"
-        } else {
-          contextMessage = "Psst... you can hold more cards if more people join!"
-        }
+        contextMessage = "You're at the limit of how many cards you can hold in your hand!"
       } else {
         // If it's their first draw (empty hand) or they pass the probability check
-        if (userHand.length === 0 || Math.random() < (1 / 2)) {
+        if (userHand.length === 0 || Math.random() < (1 / 1)) {
           const allCards = transcript('cards')
           const cardKeys = Object.keys(allCards)
           const availableCards = cardKeys.filter(key => !userHand.includes(key))
@@ -300,26 +292,22 @@ export class SlackBot {
         return
       }
       
-      if (event.thread_ts === this.rootMessage?.messageTs) {
-        const text = event.text.trim()
-        const command = text.toUpperCase()
-        const username = event.bot_id ? 'The Fool' : event.user
-        const userMention = username.startsWith('U') ? `<@${username}>` : username
+      const text = event.text.trim()
+      const command = text.toUpperCase()
+      const username = event.bot_id ? 'The Fool' : event.user
+      const userMention = username.startsWith('U') ? `<@${username}>` : username
 
-        if (command === 'DRAW') {
-          console.time('drawCard')
-          await this.drawCard(event.ts, username, userMention)
-          console.timeEnd('drawCard')
-        } else if (command.startsWith('HAND')) {
-          console.time('showHand')
-          // Check if there's a mention in the command
-          const mentionMatch = text.match(/HAND\s+<@([A-Z0-9]+)>/i)
-          const targetUsername = mentionMatch ? mentionMatch[1] : null
-          await this.showHand(event.ts, username, userMention, targetUsername)
-          console.timeEnd('showHand')
-        }
-      } else {
-        // console.log('Message is not in our thread, ignoring')
+      if (command === 'DRAW') {
+        console.time('drawCard')
+        await this.drawCard(event.ts, username, userMention)
+        console.timeEnd('drawCard')
+      } else if (command.startsWith('HAND')) {
+        console.time('showHand')
+        // Check if there's a mention in the command
+        const mentionMatch = text.match(/HAND\s+<@([A-Z0-9]+)>/i)
+        const targetUsername = mentionMatch ? mentionMatch[1] : null
+        await this.showHand(event.ts, username, userMention, targetUsername)
+        console.timeEnd('showHand')
       }
     } catch (error) {
       console.error('Error handling message event:', error)
