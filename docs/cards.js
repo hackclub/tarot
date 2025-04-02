@@ -1,3 +1,17 @@
+async function fetchUserData() {
+  try {
+    const response = await fetch('https://api2.hackclub.com/v0.1/Tarot/users');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    return null;
+  }
+}
+
 async function loadCardData() {
   try {
     const response = await fetch('transcript.yml');
@@ -11,9 +25,14 @@ async function loadCardData() {
   }
 }
 
-function createCardElement(key, card) {
+function createCardElement(key, card, userCards = []) {
   const cardDiv = document.createElement('div');
   cardDiv.className = 'card';
+  
+  // Add owned class if the user has this card
+  if (userCards.includes(key)) {
+    cardDiv.classList.add('owned');
+  }
   
   const number = document.createElement('div');
   number.className = 'card-number';
@@ -66,16 +85,49 @@ function createCardsContainer() {
   return container;
 }
 
+function getUrlParams() {
+  const params = new URLSearchParams(window.location.search);
+  return {
+    slackId: params.get('slack_id')
+  };
+}
+
 // Initialize when the DOM is loaded
 document.addEventListener('DOMContentLoaded', async () => {
+  const { slackId } = getUrlParams();
+  let userCards = [];
+
+  // Only fetch user data if slack_id is present
+  if (slackId) {
+    const userData = await fetchUserData();
+    if (userData) {
+      // Find the user's data
+      const user = userData.find(u => u.fields.slack_uid === slackId);
+      if (user) {
+        console.log('Found user data:', user);
+        // Parse the user's cards from the hand field
+        userCards = user.fields.hand.split(',').map(card => card.trim());
+      }
+    }
+  }
+
   const cards = await loadCardData();
   if (cards && typeof cards === 'object') {
     // Create container for cards
     const container = createCardsContainer();
     
+    // Convert cards object to array and sort based on ownership
+    const sortedCards = Object.entries(cards).sort(([keyA], [keyB]) => {
+      const aOwned = userCards.includes(keyA);
+      const bOwned = userCards.includes(keyB);
+      if (aOwned && !bOwned) return -1;
+      if (!aOwned && bOwned) return 1;
+      return 0;
+    });
+    
     // Create and append each card
-    Object.entries(cards).forEach(([key, card]) => {
-      const cardElement = createCardElement(key, card);
+    sortedCards.forEach(([key, card]) => {
+      const cardElement = createCardElement(key, card, userCards);
       container.appendChild(cardElement);
     });
     
