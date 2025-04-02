@@ -145,7 +145,7 @@ export class SlackBot {
     const specialActions = [
       {
         count: 4,
-        key: 'tutorial_inspect',
+        flag: 'tutorial_inspect',
         action: async () => {
           // the fool posts "wait, what did I have?"
           await this.sendMessage("wait, what did I have?", messageTs, 'The Fool')
