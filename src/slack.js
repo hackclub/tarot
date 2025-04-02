@@ -1,7 +1,7 @@
 import { WebClient } from '@slack/web-api'
 import { transcript } from './transcript.js'
 import { kv } from './kv.js'
-import { getHand, addToHand } from './airtable.js'
+import { getUser, addToHand } from './airtable.js'
 
 export class SlackBot {
   constructor(token, channelId) {
@@ -183,19 +183,19 @@ export class SlackBot {
       let contextMessage = ''
 
       // get the user's hand
-      let userHand = await getHand(username)
+      let { hand } = await getUser(username)
 
-      if (userHand.length >= maxHandSize) {
+      if (hand.length >= maxHandSize) {
         message += ' ' + transcript('drawing.too_many')
         contextMessage = "You're at the limit of how many cards you can hold in your hand!"
       } else {
         // If it's their first draw (empty hand) or they pass the probability check
-        if (userHand.length === 0 || Math.random() < (1 / 1)) {
+        if (hand.length === 0 || Math.random() < (1 / 1)) {
           const allCards = transcript('cards')
           const cardKeys = Object.keys(allCards)
-          const availableCards = cardKeys.filter(key => !userHand.includes(key))
+          const availableCards = cardKeys.filter(key => !hand.includes(key))
           const randomCard = availableCards[Math.floor(Math.random() * availableCards.length)]
-          userHand.push(randomCard)
+          hand.push(randomCard)
           await addToHand(username, randomCard)
           const chosenCard = allCards[randomCard]
           const flavor = transcript('cards.' + randomCard + '.flavor')
@@ -204,10 +204,10 @@ export class SlackBot {
           contextMessage = "Congrats!"
 
           // include user's hand count
-          if (userHand.length == maxHandSize) {
+          if (hand.length == maxHandSize) {
             message += ' ' + transcript('hand.full')
           } else {
-            message += ' ' + transcript('hand.count', { count: userHand.length, pluralCard: userHand.length == 1 ? 'card' : 'cards' })
+            message += ' ' + transcript('hand.count', { count: hand.length, pluralCard: hand.length == 1 ? 'card' : 'cards' })
           }
         } else {
           message += ' ' + transcript('drawing.no_dice')
@@ -244,14 +244,14 @@ export class SlackBot {
 
   async showHand(messageTs, username, userMention, targetUsername = null) {
     try {
-      let [_reaction, _time, userHand] = await Promise.all([
+      let [_reaction, _time, user] = await Promise.all([
         this.react(messageTs, 'beachball'),
         new Promise(resolve => setTimeout(resolve, 1000)),
-        getHand(targetUsername || username)
+        getUser(targetUsername || username)
       ])
 
-      if (!userHand) {
-        userHand = []
+      if (!user) {
+        user = { hand: [] }
       }
       
       let response = userMention + " "
@@ -259,11 +259,11 @@ export class SlackBot {
         response += `is looking at <@${targetUsername}>'s hand: `
       }
       
-      if (userHand.length === 0) {
+      if (user.hand.length === 0) {
         response += transcript('hand.empty')
       } else {
         const allCards = transcript('cards')
-        const handNames = userHand.map(cardKey => "`" + allCards[cardKey].name + "`").join(', ')
+        const handNames = user.hand.map(cardKey => "`" + allCards[cardKey].name + "`").join(', ')
         response += transcript('hand.list', { cards: handNames })
       }
 
@@ -311,19 +311,25 @@ export class SlackBot {
       } else if (command === 'OMG') {
         console.time('omgCommand')
         // Get user's hand first
-        const userHand = await getHand(username)
+        const userData = await getUser(username)
         
-        if (!userHand || userHand.length === 0) {
+        if (!userData.hand || userData.hand.length === 0) {
           // User has no cards, tell them to draw (public message)
           await this.sendMessage(`${userMention} You need to DRAW some cards first before you can submit a stretch!`, event.ts)
         } else {
           // Send private link (ephemeral)
-          await this.client.chat.postEphemeral({
-            channel: this.channelId,
-            user: username,
-            text: `Ready to submit your stretch? Go to <https://tarot.hackclub.com/submit.html?slack_id=${username}|tarot.hackclub.com/submit>`,
-            thread_ts: event.ts
-          })
+          const url = new URL('https://tarot.hackclub.com/submit.html')
+          if (userData.auth_token) {
+            url.searchParams.set('auth_token', userData.auth_token)
+            await this.client.chat.postEphemeral({
+              channel: this.channelId,
+              user: username,
+              text: `Ready to submit your stretch? Go to <${url.toString()}|tarot.hackclub.com/submit>`,
+              thread_ts: event.ts
+            })
+          } else {
+            await this.sendMessage(`${userMention} You need to be authenticated to submit a stretch!`, event.ts)
+          }
         }
         console.timeEnd('omgCommand')
       }

@@ -321,7 +321,7 @@
     <div class="content">
       <h1>Submit a stretch</h1>
       <div id="error" style="display: none;" class="error-message">
-        Error: No Slack ID provided. Please access this page through the proper channel.
+        Error: No auth token provided. Please access this page through the proper channel.
       </div>
 
       <!-- New Moments Summary Section -->
@@ -348,7 +348,7 @@
       </div>
 
       <form id="submitForm" style="display: none;">
-        <input type="hidden" id="slack_id" name="slack_id">
+        <input type="hidden" id="auth_token" name="auth_token">
         
         <div class="form-group">
           <label for="project">Which project did you work on?</label>
@@ -381,14 +381,14 @@
   </div>
 
   <script>
-    // Get slack_id from URL parameters
+    // Get auth_token from URL parameters
     const urlParams = new URLSearchParams(window.location.search);
-    const slackId = urlParams.get('slack_id');
+    const authToken = urlParams.get('auth_token');
 
-    async function validateUser(slackId) {
+    async function validateUser(authToken) {
       try {
         // Try to get all submission data - this will fail if user doesn't exist
-        const response = await fetch(`/api/submission-data?slack_id=${slackId}`);
+        const response = await fetch(`/api/submission-data?auth_token=${authToken}`);
         if (!response.ok) {
           throw new Error('Invalid user');
         }
@@ -406,22 +406,22 @@
       document.getElementById('moments-summary').style.display = 'none';
       document.querySelector('.cards-section').style.display = 'none';
 
-      if (!slackId) {
-        // Show error if no slack_id
+      if (!authToken) {
+        // Show error if no auth_token
         document.getElementById('error').style.display = 'block';
         return;
       }
 
       // Get all data and validate user
-      const data = await validateUser(slackId);
+      const data = await validateUser(authToken);
       if (!data) {
-        document.getElementById('error').textContent = 'Error: Invalid Slack ID. Please access this page through the proper channel.';
+        document.getElementById('error').textContent = 'Error: Not signed in. Get a signin link by posting "OMG" in the #draw-tarot channel.';
         document.getElementById('error').style.display = 'block';
         return;
       }
 
-      // Set slack_id in hidden input and show form
-      document.getElementById('slack_id').value = slackId;
+      // Set auth_token in hidden input and show form
+      document.getElementById('auth_token').value = authToken;
       document.getElementById('submitForm').style.display = 'block';
       
       // Load moments summary

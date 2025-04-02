@@ -1,6 +1,6 @@
 import path from 'path'
 import { readFile, writeFile } from 'fs/promises'
-import { getHand } from './airtable.js'
+import { getUser, getUserByAuthToken } from './airtable.js'
 import { transcript } from './transcript.js'
 
 // Airtable configuration
@@ -28,14 +28,30 @@ export async function hackatimeStats(req, res) {
 // Stretch submission endpoint
 export async function submitStretch(req, res) {
   try {
-    const { slack_id, project, description } = req.body;
+    const { auth_token, project, description } = req.body;
     
-    if (!slack_id || !project || !description || !req.files?.video) {
+    if (!auth_token || !project || !description || !req.files?.video) {
       return res.status(400).json({ 
         error: 'Missing required fields',
-        required: ['slack_id', 'project', 'description', 'video']
+        required: ['auth_token', 'project', 'description', 'video']
       });
     }
+
+    // Get user data from Airtable using auth token
+    const response = await fetch('https://api2.hackclub.com/v0.1/Tarot/users');
+    if (!response.ok) {
+      throw new Error('Failed to fetch users');
+    }
+    const users = await response.json();
+    const user = users.find(u => u.fields.auth_token === auth_token);
+    
+    if (!user) {
+      return res.status(401).json({
+        error: 'Invalid auth token'
+      });
+    }
+
+    const slack_id = user.fields.slack_uid;
 
     // Get total project time from Hackatime
     const hackatimeResponse = await fetch(`https://hackatime.hackclub.com/api/v1/users/${slack_id}/stats?features=projects&start_date=2025-04-02`);
@@ -192,17 +208,17 @@ export async function getCards(req, res) {
     const safeSlackId = slack_id.replace(/[^a-zA-Z0-9]/g, '');
     
     // Get user's hand
-    const cardIds = await getHand(safeSlackId);
+    const { hand } = await getUser(safeSlackId);
     
     // If no cards found, user doesn't exist
-    if (!cardIds || cardIds.length === 0) {
+    if (!hand || hand.length === 0) {
       return res.status(404).json({
         error: 'User not found'
       });
     }
     
     // Get card details from transcript
-    const cards = cardIds.map(cardId => {
+    const cards = hand.map(cardId => {
       const cardData = transcript(`cards.${cardId}`);
       return {
         id: cardId,
@@ -222,38 +238,65 @@ export async function getCards(req, res) {
 // Get all submission page data in one call
 export async function getSubmissionData(req, res) {
   try {
-    const { slack_id } = req.query;
+    const { auth_token } = req.query;
     
-    if (!slack_id) {
+    if (!auth_token) {
       return res.status(400).json({ 
-        error: 'Missing required parameter: slack_id'
+        error: 'Missing required parameter: auth_token'
       });
     }
 
-    // Sanitize slack_id to prevent injection
-    const safeSlackId = slack_id.replace(/[^a-zA-Z0-9]/g, '');
+    const decodedAuthToken = decodeURIComponent(auth_token);
+    const user = await getUserByAuthToken(decodedAuthToken);
     
-    // Get all data in parallel
-    const [cardIds, moments, hackatimeStats] = await Promise.all([
-      getHand(safeSlackId),
-      fetch('https://api2.hackclub.com/v0.1/Tarot/moments').then(async r => {
-        if (!r.ok) throw new Error(`Failed to fetch moments: ${await r.text()}`);
-        const data = await r.json();
-        // Filter moments for this user
-        return { records: data.filter(record => record.fields.slack_uid === safeSlackId) };
-      }),
-      fetch(`https://hackatime.hackclub.com/api/v1/users/${safeSlackId}/stats?features=projects&start_date=2025-04-02`).then(r => r.json())
-    ]);
+    if (!user) {
+      return res.status(401).json({
+        error: 'Invalid auth token'
+      });
+    }
 
-    // If no cards found, user doesn't exist
-    if (!cardIds || cardIds.length === 0) {
+    const slack_id = user.fields.slack_uid;
+
+    if (!user.fields.hand || user.fields.hand.split(',').length === 0) {
       return res.status(404).json({
         error: 'User not found'
       });
     }
+    
+    const [moments, hackatimeResponse] = await Promise.all([
+      fetch('https://api2.hackclub.com/v0.1/Tarot/moments').then(async r => {
+        if (!r.ok) throw new Error(`Failed to fetch moments: ${await r.text()}`);
+        const data = await r.json();
+        // Filter moments for this user
+        return data.filter(record => record.fields.slack_uid === slack_id);
+      }),
+      fetch(`https://hackatime.hackclub.com/api/v1/users/${slack_id}/stats?features=projects&start_date=2025-04-02`)
+    ]);
 
-    // Get card details from transcript
-    const cards = cardIds.map(cardId => {
+    // Check if hackatime response is ok
+    if (!hackatimeResponse.ok) {
+      console.error('Hackatime API error:', {
+        status: hackatimeResponse.status,
+        statusText: hackatimeResponse.statusText,
+        url: hackatimeResponse.url
+      });
+      const errorText = await hackatimeResponse.text();
+      console.error('Hackatime error response:', errorText);
+      throw new Error(`Hackatime API error: ${hackatimeResponse.status} ${hackatimeResponse.statusText}`);
+    }
+
+    // Try to parse hackatime response
+    let hackatimeStats;
+    try {
+      const responseText = await hackatimeResponse.text();
+      console.log('Raw hackatime response:', responseText);
+      hackatimeStats = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error('Failed to parse hackatime response:', parseError);
+      throw new Error('Invalid JSON response from Hackatime API');
+    }
+
+    const cards = user.fields.hand.split(',').map(cardId => {
       const cardData = transcript(`cards.${cardId}`);
       return {
         id: cardId,
@@ -263,14 +306,21 @@ export async function getSubmissionData(req, res) {
       };
     });
 
-    // Return all data
+    console.log('Successfully prepared response with:', {
+      cards: cards.length,
+      moments: moments.length,
+      projects: hackatimeStats?.data?.projects?.length || 0
+    });
+
+    // Return all data in the format expected by the frontend
     res.json({
       cards,
-      moments: moments.records || [],
+      moments,
       projects: hackatimeStats?.data?.projects || []
     });
   } catch (error) {
     console.error('Error getting submission data:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({ error: 'Failed to get submission data' });
   }
-} 
+}
