@@ -23,15 +23,20 @@ const cards = [
   "The World",
 ];
 
+const designatedChannel = "#draw-tarot";
 
+// Function to draw a card
 function drawCard(channelName) {
-  if (channelName !== "#draw-tarot") {
-    console.log("Only available in #draw-tarot.");
-    return;
+  if (!channelName) {
+    return "Error: No channel specified.";
+  }
+
+  if (channelName !== designatedChannel) {
+    return `This command is only allowed in the designated channel: ${designatedChannel}.`;
   }
 
   const randomIndex = Math.floor(Math.random() * cards.length);
-  const drawnCard = cards[randomIndex];
-  console.log(`You drew: ${drawnCard}`);
+  return cards[randomIndex];
 }
+
 module.exports = { drawCard };
