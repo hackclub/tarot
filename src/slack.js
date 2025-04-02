@@ -321,6 +321,7 @@ export class SlackBot {
           const url = new URL('https://tarot.hackclub.com/submit.html')
           if (auth_token) {
             url.searchParams.set('auth_token', auth_token)
+            await this.sendMessage(`${userMention} Ready to submit your stretch?`, event.ts)
             await this.client.chat.postEphemeral({
               channel: this.channelId,
               user: username,
@@ -328,7 +329,7 @@ export class SlackBot {
               thread_ts: event.ts
             })
           } else {
-            await this.sendMessage(`${userMention} You need to be authenticated to submit a stretch!`, event.ts)
+            await this.sendMessage(`${userMention} You need to have cards to submit a stretch! Type DRAW`, event.ts)
           }
         }
         console.timeEnd('omgCommand')
