@@ -194,7 +194,42 @@ export class SlackBot {
           maxHandSize = 5
           await this.sendMessage("As more crowd gathers, the deck grows larger.... you can now hold 5 cards", messageTs)
         }
+      },
+      {
+        count: 120,
+        flag: 'ending',
+        action: async () => {
+          await this.sendMessage("Only one card remains on the table, and on it you see the depiction of a tassle-hatted fool juggling and dancing around.... it opens it's mouth as if to speak and words show up on the bottom of the card", messageTs)
+        }
       }
+    ]
+
+    // these trigger on all requests once we have the count worth of users
+    let regularActions = [
+      {
+        count: 1,
+        action: async () => {
+          if (Math.random() < 0.1) {
+            await this.sendMessage(transcript('drawing.first_leg'), messageTs)
+          }
+        }
+      },
+      {
+        count: 50,
+        action: async () => {
+          if (Math.random() < 0.1) {
+            await this.sendMessage(transcript('drawing.second_leg'), messageTs)
+          }
+        }
+      },
+      {
+        count: 100,
+        action: async () => {
+          if (Math.random() < 0.1) {
+            await this.sendMessage(transcript('drawing.third_leg'), messageTs)
+          }
+        }
+      },
     ]
 
     for (const action of specialActions) {
@@ -205,6 +240,12 @@ export class SlackBot {
           action.action()
           kv.set(flagKey, true, null, true)
         }, 5 * 1000)
+      }
+    }
+
+    for (const action of regularActions) {
+      if (userCounts >= action.count) {
+        action.action()
       }
     }
 

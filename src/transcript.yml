@@ -67,6 +67,27 @@ drawing:
     - you reach out to grab another card, but it slips through your fingers
     - you reach out to grab another card, but it's just out of reach
     - you reach out to grab another card, but see ${this.t('drawing.scribbled')} cryptically staring back at you! You quickly pull your hand back, but realize that might have been just a trick of the light.
+  first_leg: # after 20 users
+    - "as you reach for a card you see something animated deep in the pile"
+    - "strangely, the deck seems larger than when you first started drawing from it"
+    - "the cards shift and settle, somehow taking up more space than before"
+    - "you could swear there are more cards now than when you began"
+    - "the pile grows deeper with each draw, defying logic"
+    - "something stirs in the depths of the ever-growing deck"
+  second_leg: # after 50 users
+    - "the deck has grown impossibly large, and something is definitely moving down there"
+    - "laughter echoes from somewhere deep within the towering pile"
+    - "the cards seem to part on their own, revealing glimpses of something below"
+    - "a playful energy radiates from the heart of the deck"
+  third_leg: # after 100 users
+    - "you could have sworn you saw that card move...."
+    - "something moves deep within the pile..."
+    - "you catch a flash of a grinning face between the cards"
+    - "the cards seem to whisper among themselves..."
+    - "did that shadow just... laugh?"
+    - "the bottom of the deck pulses with an unseen heartbeat"
+    - "a face peers out between the cards, then vanishes"
+    - "you hear faint giggling from somewhere in the pile"
   disappears:
     - the card disappears
     - the card vanishes
