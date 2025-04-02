@@ -21,21 +21,7 @@ const cards = [
   "The Sun",
   "Judgement",
   "The World",
-<<<<<<< Updated upstream
 ];
-
-const designatedChannel = "#draw-tarot";
-
-// Function to draw a card
-function drawCard(channelName) {
-  if (!channelName) {
-    return "Error: No channel specified.";
-  }
-
-  if (channelName !== designatedChannel) {
-    return `This command is only allowed in the designated channel: ${designatedChannel}.`;
-=======
-]
 
 const designatedChannel = "#draw-tarot";
 
@@ -47,16 +33,12 @@ const userCards = {
 function drawCard(channelName) {
   if (channelName !== designatedChannel) {
     return `Error: Drawing cards is only allowed in the designated channel: ${designatedChannel}.`;
->>>>>>> Stashed changes
   }
 
   const randomIndex = Math.floor(Math.random() * cards.length);
   return cards[randomIndex];
 }
 
-<<<<<<< Updated upstream
-module.exports = { drawCard };
-=======
 function viewHand(user, channelName) {
   if (channelName !== designatedChannel) {
     return `Error: Viewing hands is only allowed in the designated channel: ${designatedChannel}.`;
@@ -66,20 +48,15 @@ function viewHand(user, channelName) {
     return `Error: User "${user}" does not exist.`;
   }
 
-  return `${user}'s hand: ${userCards[user].join(", ")}`;
-}
-
-// Function to trade cards between users
+  return `${user}'s hand: ${userCards[user].join(", ")}`
 function tradeCards(user1, card1, user2, card2, channelName) {
   if (channelName !== designatedChannel) {
     return `Error: Trades are only allowed in the designated channel: ${designatedChannel}.`;
   }
 
-  // Check if both users exist
   if (!userCards[user1] || !userCards[user2]) {
     return `Error: One or both users do not exist.`;
   }
-
 
   if (!userCards[user1].includes(card1)) {
     return `Error: ${user1} does not own the card "${card1}".`;
@@ -98,4 +75,3 @@ function tradeCards(user1, card1, user2, card2, channelName) {
 }
 
 module.exports = { cards, userCards, drawCard, viewHand, tradeCards };
->>>>>>> Stashed changes
