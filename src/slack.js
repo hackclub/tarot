@@ -377,41 +377,6 @@ export class SlackBot {
     }
   }
 
-  async inspectCard(messageTs, username, userMention) {
-    try {
-      await this.react(messageTs, 'beachball')
-      
-      // get the user's hand
-      let userHand = await kv.get(`user_hand:${username}`, true)
-      if (!userHand || userHand.length === 0) {
-        const message = userMention + ' ' + transcript('inspect.no_cards')
-        await Promise.all([
-          this.react(messageTs, 'beachball', false),
-          this.react(messageTs, 'white_check_mark', true),
-          this.sendMessage(message, messageTs)
-        ])
-        return
-      }
-
-      // Get the most recent card (last in the hand)
-      const lastCardKey = userHand[userHand.length - 1]
-      const allCards = transcript('cards')
-      const card = allCards[lastCardKey]
-      const flavor = transcript('cards.' + lastCardKey + '.flavor')
-
-      const message = `${userMention} inspects *${card.name}*...\n\n_${flavor}_\n\nRequirements: \`\`\`${card.requirements}\`\`\``
-      
-      await Promise.all([
-        this.react(messageTs, 'beachball', false),
-        this.react(messageTs, 'white_check_mark', true),
-        this.sendMessage(message, messageTs)
-      ])
-    } catch (error) {
-      console.error('Error in inspectCard:', error)
-      throw error
-    }
-  }
-
   async handleMessageEvent(event) {
     try {
       // Verify the message is in our channel
@@ -433,10 +398,6 @@ export class SlackBot {
           console.time('showHand')
           await this.showHand(event.ts, username, userMention)
           console.timeEnd('showHand')
-        } else if (command === 'INSPECT') {
-          console.time('inspectCard')
-          await this.inspectCard(event.ts, username, userMention)
-          console.timeEnd('inspectCard')
         }
       } else {
         // console.log('Message is not in our thread, ignoring')
