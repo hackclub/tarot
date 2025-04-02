@@ -326,6 +326,7 @@ cards:
   the_broken_keyboard:
     name: th brken keybard
     arcanum: hacker
+    image: "the_broken_keyboard.png"
     flavor:
       - keyboard not detected. press f1 to continue
       - myspacebarisbroken
