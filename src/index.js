@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url'
 import { mkdir } from 'fs/promises'
 import fileUpload from 'express-fileupload'
 import { cleanupOldFiles } from './garbage_collection.js'
-import { healthCheck, hackatimeStats, submitStretch, getMoments, getCards, getSubmissionData } from './api.js'
+import { healthCheck, submitStretch, getSubmissionData } from './api.js'
 
 const app = express()
 const port = process.env.PORT || 3030
@@ -79,10 +79,6 @@ app.use(express.static(path.join(__dirname, '../docs')))
 
 // API endpoints
 app.get('/up', healthCheck)
-// app.get('/api/health', healthCheck)
-// app.get('/api/hackatime-stats', hackatimeStats)
-// app.get('/api/moments', getMoments)
-// app.get('/api/cards', getCards)
 app.get('/api/submission-data', getSubmissionData)
 app.post('/api/submit-stretch', submitStretch)
 
