@@ -28,7 +28,7 @@ export async function hackatimeStats(req, res) {
 // Stretch submission endpoint
 export async function submitStretch(req, res) {
   try {
-    const { auth_token, project, description } = req.body;
+    const { auth_token, project, description, selected_cards } = req.body;
     
     if (!auth_token || !project || !description || !req.files?.video) {
       return res.status(400).json({ 
@@ -120,6 +120,7 @@ export async function submitStretch(req, res) {
           'duration_seconds': durationSeconds,
           'user_agent': req.headers['user-agent'],
           'ip_address': req.ip,
+          'selected_cards': selected_cards || '',
           'attachment': [{
             url: `${baseUrl}/temp/${urlFriendlyName}`,
             filename: video.name
