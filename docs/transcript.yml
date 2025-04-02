@@ -180,6 +180,7 @@ cards:
       - use text to speech or speech to text
   justice:
     name: Justice
+    image: "justice.png"
     arcanum: major
     flavor:
       - You've been blessed by Terry Davis
