@@ -52,7 +52,7 @@ function viewHand(user, channelName) {
 function tradeCards(user1, card1, user2, card2, channelName) {
   if (channelName !== designatedChannel) {
     return `Error: Trades are only allowed in the designated channel: ${designatedChannel}.`;
-  }
+  } 
 
   if (!userCards[user1] || !userCards[user2]) {
     return `Error: One or both users do not exist.`;
