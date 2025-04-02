@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename)
 
 // Initialize Slack bot with your token and channel ID
 const slackToken = process.env.SLACK_BOT_TOKEN
-const slackChannelId = 'C08KN8PKPE3'
+const slackChannelId = 'C08LESAQASG'
 
 if (!slackToken) {
   console.error('Missing required environment variable: SLACK_BOT_TOKEN')
