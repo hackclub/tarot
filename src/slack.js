@@ -190,7 +190,7 @@ export class SlackBot {
         }
       },
       {
-        count: 100,
+        count: 70,
         flag: 'deck_grows_3',
         action: async () => {
           maxHandSize = 5
@@ -199,7 +199,7 @@ export class SlackBot {
         }
       },
       {
-        count: 110,
+        count: 78,
         flag: 'ending',
         action: async () => {
           await this.sendMessage("One animated card is now laid out on the table, and on it you see the depiction of a tassle-hatted fool juggling and dancing around.... it opens it's mouth as if to speak and words show up on the bottom of the card", messageTs)
@@ -226,7 +226,7 @@ export class SlackBot {
         }
       },
       {
-        count: 100,
+        count: 70,
         action: async () => {
           if (Math.random() < 0.1) {
             await this.sendMessage(transcript('drawing.third_leg'), messageTs)
