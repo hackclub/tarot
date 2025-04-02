@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="shader.js" defer></script>
+  <title>Submit Your Project - TaroT</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:wght@400;600&display=swap');
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #fff;
+      font-family: 'Cormorant Garamond', serif;
+      line-height: 1.6;
+    }
+
+    .content-section {
+      max-width: 800px;
+      padding: 2rem;
+      width: 100%;
+      box-sizing: border-box;
+      margin-top: 4rem;
+    }
+
+    .content {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 2rem;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      font-family: 'Cinzel', serif;
+      text-align: center;
+      margin-bottom: 2rem;
+      color: #ffd700;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    label {
+      font-family: 'Cinzel', serif;
+      font-size: 1.2rem;
+      color: #ffd700;
+    }
+
+    input[type="text"],
+    input[type="file"],
+    textarea {
+      padding: 0.8rem;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.2);
+      color: white;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+    }
+
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+
+    input[type="file"] {
+      padding: 0.5rem;
+    }
+
+    input[type="file"]::file-selector-button {
+      font-family: 'Cinzel', serif;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      border: 1px solid #ffd700;
+      background: rgba(255, 215, 0, 0.1);
+      color: #ffd700;
+      cursor: pointer;
+      margin-right: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    input[type="file"]::file-selector-button:hover {
+      background: rgba(255, 215, 0, 0.2);
+    }
+
+    button {
+      font-family: 'Cinzel', serif;
+      padding: 1rem 2rem;
+      border-radius: 6px;
+      border: 1px solid #ffd700;
+      background: rgba(255, 215, 0, 0.1);
+      color: #ffd700;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 1rem;
+    }
+
+    button:hover {
+      background: rgba(255, 215, 0, 0.2);
+      transform: translateY(-2px);
+    }
+
+    canvas {
+      position: fixed;
+      z-index: -1;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    .back-link {
+      position: absolute;
+      top: 2rem;
+      left: 2rem;
+      color: #ffd700;
+      text-decoration: none;
+      font-family: 'Cinzel', serif;
+      transition: color 0.3s ease;
+    }
+
+    .back-link:hover {
+      color: white;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+
+    .error-message {
+      background: rgba(255, 0, 0, 0.1);
+      border: 1px solid rgba(255, 0, 0, 0.3);
+      padding: 1rem;
+      border-radius: 6px;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .stats {
+      background: rgba(255, 215, 0, 0.1);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      padding: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+    }
+
+    .stats h3 {
+      margin: 0 0 0.5rem 0;
+      color: #ffd700;
+      font-family: 'Cinzel', serif;
+    }
+
+    .project-select {
+      padding: 0.8rem;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.2);
+      color: white;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    .project-select option {
+      background: #1a1a1a;
+      color: white;
+      padding: 0.5rem;
+    }
+
+    .project-select:focus {
+      outline: none;
+      border-color: #ffd700;
+      box-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+    }
+
+    .success-message {
+      background: rgba(0, 255, 0, 0.1);
+      border: 1px solid rgba(0, 255, 0, 0.3);
+      color: #00ff00;
+      padding: 1rem;
+      border-radius: 6px;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="back-link">← Back to Home</a>
+  <canvas id="canvas"></canvas>
+  
+  <div class="content-section">
+    <div class="content">
+      <h1>Submit a stretch</h1>
+      <div id="error" style="display: none;" class="error-message">
+        Error: No Slack ID provided. Please access this page through the proper channel.
+      </div>
+      <div id="stats" style="display: none;" class="stats">
+        <h3>Your Progress</h3>
+        <div id="statsContent"></div>
+      </div>
+      <form id="submitForm" style="display: none;">
+        <input type="hidden" id="slack_id" name="slack_id">
+        
+        <div class="form-group">
+          <label for="project">Which project did you work on?</label>
+          <select id="project" name="project" required class="project-select">
+            <option value="">Select a project...</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="video">Upload a video of your "OMG IT WORKS moment"</label>
+          <input type="file" id="video" name="video" accept="video/*" required>
+        </div>
+
+        <div class="form-group">
+          <label for="description">What did you make?</label>
+          <textarea id="description" name="description" placeholder="Describe what you built and how it works..." required></textarea>
+        </div>
+
+        <button type="submit">Submit your stretch</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Get slack_id from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const slackId = urlParams.get('slack_id');
+
+    if (!slackId) {
+      // Show error if no slack_id
+      document.getElementById('error').style.display = 'block';
+      document.getElementById('submitForm').style.display = 'none';
+    } else {
+      // Set slack_id in hidden input and show form
+      document.getElementById('slack_id').value = slackId;
+      document.getElementById('submitForm').style.display = 'block';
+      
+      // Fetch user stats from Hackatime
+      fetch(`/api/hackatime/stats/${slackId}`)
+        .then(response => response.json())
+        .then(data => {
+          const statsDiv = document.getElementById('stats');
+          const statsContent = document.getElementById('statsContent');
+          const projectSelect = document.getElementById('project');
+          
+          // Display relevant stats
+          if (data && data.data) {
+            statsDiv.style.display = 'block';
+            const totalSeconds = data.data.total_seconds;
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            statsContent.innerHTML = `
+              Total time spent: ${hours} hours ${minutes} minutes<br>
+              Projects: ${data.data.projects.length || 0}
+            `;
+
+            // Populate project dropdown
+            if (data.data.projects && data.data.projects.length > 0) {
+              // Sort projects by time spent (descending)
+              const sortedProjects = data.data.projects.sort((a, b) => b.total_seconds - a.total_seconds);
+              
+              sortedProjects.forEach(project => {
+                if (project.total_seconds > 0) { // Only show projects with time logged
+                  const hours = project.hours;
+                  const minutes = project.minutes;
+                  const timeText = hours > 0 ? 
+                    `${hours}h ${minutes}m` : 
+                    `${minutes}m`;
+                  
+                  const option = document.createElement('option');
+                  option.value = project.name;
+                  option.textContent = `${project.name} (${timeText})`;
+                  projectSelect.appendChild(option);
+                }
+              });
+            }
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching stats:', error);
+          const statsDiv = document.getElementById('stats');
+          statsDiv.style.display = 'block';
+          statsDiv.innerHTML = '<div class="error-message">Failed to load project stats. Please try again later.</div>';
+        });
+    }
+
+    document.getElementById('submitForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const submitButton = this.querySelector('button[type="submit"]');
+      const videoInput = this.querySelector('input[type="file"]');
+      const video = videoInput.files[0];
+
+      // Check file size before submitting (100MB limit)
+      const MAX_SIZE = 100 * 1024 * 1024; // 100MB
+      if (video && video.size > MAX_SIZE) {
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'error-message';
+        errorMessage.textContent = 'Video file must be smaller than 100MB';
+        this.insertBefore(errorMessage, submitButton);
+        
+        setTimeout(() => {
+          errorMessage.remove();
+        }, 5000);
+        return;
+      }
+
+      submitButton.disabled = true;
+      submitButton.textContent = 'Submitting...';
+
+      try {
+        const formData = new FormData(this);
+        const response = await fetch('/api/submit-stretch', {
+          method: 'POST',
+          body: formData
+        });
+
+        let result;
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          result = await response.json();
+        } else {
+          throw new Error('Server returned an invalid response');
+        }
+        
+        if (!response.ok) {
+          throw new Error(result.message || result.error || 'Failed to submit stretch');
+        }
+
+        // Show success message
+        const successMessage = document.createElement('div');
+        successMessage.className = 'success-message';
+        successMessage.textContent = 'Stretch submitted successfully! 🎉';
+        this.insertBefore(successMessage, submitButton);
+
+        // Clear form
+        this.reset();
+        
+        // Remove success message after 5 seconds
+        setTimeout(() => {
+          successMessage.remove();
+        }, 5000);
+
+      } catch (error) {
+        console.error('Error submitting form:', error);
+        
+        // Show error message
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'error-message';
+        errorMessage.textContent = error.message || 'Failed to submit stretch. Please try again.';
+        this.insertBefore(errorMessage, submitButton);
+        
+        // Remove error message after 5 seconds
+        setTimeout(() => {
+          errorMessage.remove();
+        }, 5000);
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Submit your stretch';
+      }
+    });
+
+    // Add file size validation on file input change
+    document.getElementById('video').addEventListener('change', function(e) {
+      const MAX_SIZE = 100 * 1024 * 1024; // 100MB
+      const file = this.files[0];
+      
+      if (file && file.size > MAX_SIZE) {
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'error-message';
+        errorMessage.textContent = 'Video file must be smaller than 100MB';
+        this.parentElement.appendChild(errorMessage);
+        
+        // Clear the file input
+        this.value = '';
+        
+        // Remove error message after 5 seconds
+        setTimeout(() => {
+          errorMessage.remove();
+        }, 5000);
+      }
+    });
+  </script>
+</body>
+</html> 
