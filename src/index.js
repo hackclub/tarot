@@ -1,13 +1,12 @@
 import express from 'express'
 import { SlackBot } from './slack.js'
 import { transcript } from './transcript.js'
-import { kv } from './kv.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { mkdir } from 'fs/promises'
 import fileUpload from 'express-fileupload'
 import { cleanupOldFiles } from './garbage_collection.js'
-import { healthCheck, hackatimeStats, submitStretch, getMoments } from './api.js'
+import { healthCheck, hackatimeStats, submitStretch, getMoments, getCards, getSubmissionData } from './api.js'
 
 const app = express()
 const port = process.env.PORT || 3030
@@ -16,10 +15,6 @@ const __dirname = path.dirname(__filename)
 
 // Trust proxy to get real IP address
 app.set('trust proxy', true);
-
-// Airtable configuration
-const AIRTABLE_BASE_ID = "appOkhzTn4Z3FI9gv"
-const AIRTABLE_TABLE_NAME = 'moments'
 
 // Initialize Slack bot with your token and channel ID
 const slackToken = process.env.SLACK_BOT_TOKEN
@@ -84,8 +79,11 @@ app.use(express.static(path.join(__dirname, '../docs')))
 
 // API endpoints
 app.get('/up', healthCheck)
-app.get('/api/hackatime/stats/:slackId', hackatimeStats)
-app.get('/api/moments', getMoments)
+// app.get('/api/health', healthCheck)
+// app.get('/api/hackatime-stats', hackatimeStats)
+// app.get('/api/moments', getMoments)
+// app.get('/api/cards', getCards)
+app.get('/api/submission-data', getSubmissionData)
 app.post('/api/submit-stretch', submitStretch)
 
 // Slack events endpoint

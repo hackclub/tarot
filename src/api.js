@@ -1,5 +1,7 @@
 import path from 'path'
 import { readFile, writeFile } from 'fs/promises'
+import { getHand } from './airtable.js'
+import { transcript } from './transcript.js'
 
 // Airtable configuration
 const AIRTABLE_BASE_ID = "appOkhzTn4Z3FI9gv"
@@ -26,11 +28,6 @@ export async function hackatimeStats(req, res) {
 // Stretch submission endpoint
 export async function submitStretch(req, res) {
   try {
-    console.log('Received submission request:');
-    console.log('- Content-Type:', req.headers['content-type']);
-    console.log('- Content-Length:', req.headers['content-length']);
-    console.log('- Files:', Object.keys(req.files || {}));
-    
     const { slack_id, project, description } = req.body;
     
     if (!slack_id || !project || !description || !req.files?.video) {
@@ -46,9 +43,13 @@ export async function submitStretch(req, res) {
       throw new Error('Failed to fetch Hackatime stats');
     }
     const hackatimeData = await hackatimeResponse.json();
-    
+
     // Find this project's total seconds
-    const projectStats = hackatimeData.projects.find(p => p.name === project);
+    if (!hackatimeData || !hackatimeData.data || !hackatimeData.data.projects) {
+      throw new Error('Invalid Hackatime response format');
+    }
+
+    const projectStats = hackatimeData.data.projects.find(p => p.name === project);
     if (!projectStats) {
       throw new Error(`Project "${project}" not found in Hackatime data`);
     }
@@ -114,7 +115,6 @@ export async function submitStretch(req, res) {
         }
       }]
     };
-    console.log('Airtable payload:', airtablePayload);
     
     const airtableResponse = await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}`, {
       method: 'POST',
@@ -125,7 +125,6 @@ export async function submitStretch(req, res) {
       body: JSON.stringify(airtablePayload)
     });
 
-    console.log('Airtable response:', airtableResponse.status);
     const responseText = await airtableResponse.text();
     
     if (!airtableResponse.ok) {
@@ -134,7 +133,6 @@ export async function submitStretch(req, res) {
     }
 
     const result = JSON.parse(responseText);
-    console.log('Airtable result:', result);
     
     res.json({ 
       status: 'success',
@@ -150,16 +148,10 @@ export async function submitStretch(req, res) {
 
 // Get previous moments endpoint
 export async function getMoments(req, res) {
-  console.log('GET /api/moments request received:', {
-    query: req.query,
-    headers: req.headers
-  });
-  
   try {
     const { slack_id } = req.query;
     
     if (!slack_id) {
-      console.log('No slack_id provided');
       return res.status(400).json({ 
         error: 'Missing required parameter: slack_id'
       });
@@ -167,48 +159,118 @@ export async function getMoments(req, res) {
 
     // Sanitize slack_id to prevent injection
     const safeSlackId = slack_id.replace(/[^a-zA-Z0-9]/g, '');
-    console.log('Sanitized slack_id:', { original: slack_id, sanitized: safeSlackId });
     
     const response = await fetch('https://api2.hackclub.com/v0.1/Tarot/moments');
-    console.log('API response status:', response.status);
-
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('API error:', {
-        status: response.status,
-        statusText: response.statusText,
-        body: errorText
-      });
-      throw new Error(`Failed to fetch moments: ${errorText}`);
+      throw new Error(`Failed to fetch moments: ${await response.text()}`);
     }
 
     const data = await response.json();
-    console.log(`Found ${data.length} total moments`);
     
-    // Filter moments for this user
+    // Filter moments for this user and send raw data
     const userMoments = data.filter(record => record.fields.slack_uid === safeSlackId);
-    console.log(`Found ${userMoments.length} moments for user ${safeSlackId}`);
+    res.json({ records: userMoments });
     
-    // Map the records to match our expected format
-    const mappedData = {
-      records: userMoments.map(record => ({
-        id: record.id,
-        fields: {
-          hours: record.fields.hours || 0,
-          status: record.fields.status || 'pending',
-          description: record.fields.description || '',
-          project: record.fields.project || '',
-          created: record.fields.Created || ''
-        }
-      }))
-    };
-    
-    res.json(mappedData);
   } catch (error) {
     console.error('Error in getMoments:', error);
-    res.status(500).json({ 
-      error: 'Failed to fetch moments',
-      details: error.message
+    res.status(500).json({ error: 'Failed to fetch moments' });
+  }
+}
+
+// Get user's cards endpoint
+export async function getCards(req, res) {
+  try {
+    const { slack_id } = req.query;
+    
+    if (!slack_id) {
+      return res.status(400).json({ 
+        error: 'Missing required parameter: slack_id'
+      });
+    }
+
+    // Sanitize slack_id to prevent injection
+    const safeSlackId = slack_id.replace(/[^a-zA-Z0-9]/g, '');
+    
+    // Get user's hand
+    const cardIds = await getHand(safeSlackId);
+    
+    // If no cards found, user doesn't exist
+    if (!cardIds || cardIds.length === 0) {
+      return res.status(404).json({
+        error: 'User not found'
+      });
+    }
+    
+    // Get card details from transcript
+    const cards = cardIds.map(cardId => {
+      const cardData = transcript(`cards.${cardId}`);
+      return {
+        id: cardId,
+        name: cardData.name || cardId,
+        requirements: cardData.requirements || '',
+        flavor: cardData.flavor || []
+      };
     });
+    
+    res.json(cards);
+  } catch (error) {
+    console.error('Error getting cards:', error);
+    res.status(500).json({ error: 'Failed to get cards' });
+  }
+}
+
+// Get all submission page data in one call
+export async function getSubmissionData(req, res) {
+  try {
+    const { slack_id } = req.query;
+    
+    if (!slack_id) {
+      return res.status(400).json({ 
+        error: 'Missing required parameter: slack_id'
+      });
+    }
+
+    // Sanitize slack_id to prevent injection
+    const safeSlackId = slack_id.replace(/[^a-zA-Z0-9]/g, '');
+    
+    // Get all data in parallel
+    const [cardIds, moments, hackatimeStats] = await Promise.all([
+      getHand(safeSlackId),
+      fetch('https://api2.hackclub.com/v0.1/Tarot/moments').then(async r => {
+        if (!r.ok) throw new Error(`Failed to fetch moments: ${await r.text()}`);
+        const data = await r.json();
+        // Filter moments for this user
+        return { records: data.filter(record => record.fields.slack_uid === safeSlackId) };
+      }),
+      fetch(`https://hackatime.hackclub.com/api/v1/users/${safeSlackId}/stats?features=projects&start_date=2025-04-02`).then(r => r.json())
+    ]);
+
+    // If no cards found, user doesn't exist
+    if (!cardIds || cardIds.length === 0) {
+      return res.status(404).json({
+        error: 'User not found'
+      });
+    }
+
+    // Get card details from transcript
+    const cards = cardIds.map(cardId => {
+      const cardData = transcript(`cards.${cardId}`);
+      return {
+        id: cardId,
+        name: cardData.name || cardId,
+        requirements: cardData.requirements || '',
+        flavor: cardData.flavor || []
+      };
+    });
+
+    // Return all data
+    res.json({
+      cards,
+      moments: moments.records || [],
+      projects: hackatimeStats?.data?.projects || []
+    });
+  } catch (error) {
+    console.error('Error getting submission data:', error);
+    res.status(500).json({ error: 'Failed to get submission data' });
   }
 } 

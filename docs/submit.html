@@ -251,7 +251,7 @@
       border: 1px solid rgba(255, 215, 0, 0.5);
     }
 
-    .moment-accepted {
+    .moment-approved {
       background: rgba(0, 255, 0, 0.3);
       border: 1px solid rgba(0, 255, 0, 0.5);
     }
@@ -259,6 +259,57 @@
     .moment-rejected {
       background: rgba(255, 0, 0, 0.3);
       border: 1px solid rgba(255, 0, 0, 0.5);
+    }
+
+    .cards-section {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      border-radius: 6px;
+    }
+
+    .cards-section h3 {
+      margin: 0 0 1rem 0;
+      color: #ffd700;
+      font-family: 'Cinzel', serif;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .card-item {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      border-radius: 6px;
+      padding: 0.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .card-item:hover {
+      background: rgba(255, 215, 0, 0.1);
+    }
+
+    .card-item.selected {
+      background: rgba(255, 215, 0, 0.2);
+      border-color: #ffd700;
+    }
+
+    .card-name {
+      font-family: 'Cinzel', serif;
+      color: #ffd700;
+      font-size: 1rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .card-description {
+      font-size: 0.9rem;
+      opacity: 0.8;
     }
   </style>
 </head>
@@ -296,10 +347,6 @@
         <div id="recent-moments" class="recent-moments"></div>
       </div>
 
-      <div id="stats" style="display: none;" class="stats">
-        <h3>Your Progress</h3>
-        <div id="statsContent"></div>
-      </div>
       <form id="submitForm" style="display: none;">
         <input type="hidden" id="slack_id" name="slack_id">
         
@@ -308,6 +355,14 @@
           <select id="project" name="project" required class="project-select">
             <option value="">Select a project...</option>
           </select>
+        </div>
+
+        <div class="cards-section">
+          <h3>Which card requirements does this hit?</h3>
+          <div id="cards-grid" class="cards-grid">
+            <!-- Cards will be populated here -->
+          </div>
+          <input type="hidden" id="selected_cards" name="selected_cards">
         </div>
 
         <div class="form-group">
@@ -330,123 +385,93 @@
     const urlParams = new URLSearchParams(window.location.search);
     const slackId = urlParams.get('slack_id');
 
-    if (!slackId) {
-      // Show error if no slack_id
-      document.getElementById('error').style.display = 'block';
+    async function validateUser(slackId) {
+      try {
+        // Try to get all submission data - this will fail if user doesn't exist
+        const response = await fetch(`/api/submission-data?slack_id=${slackId}`);
+        if (!response.ok) {
+          throw new Error('Invalid user');
+        }
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error('Error validating user:', error);
+        return null;
+      }
+    }
+
+    async function initializePage() {
+      // Hide all dynamic content initially
       document.getElementById('submitForm').style.display = 'none';
-    } else {
+      document.getElementById('moments-summary').style.display = 'none';
+      document.querySelector('.cards-section').style.display = 'none';
+
+      if (!slackId) {
+        // Show error if no slack_id
+        document.getElementById('error').style.display = 'block';
+        return;
+      }
+
+      // Get all data and validate user
+      const data = await validateUser(slackId);
+      if (!data) {
+        document.getElementById('error').textContent = 'Error: Invalid Slack ID. Please access this page through the proper channel.';
+        document.getElementById('error').style.display = 'block';
+        return;
+      }
+
       // Set slack_id in hidden input and show form
       document.getElementById('slack_id').value = slackId;
       document.getElementById('submitForm').style.display = 'block';
       
-      // Load moments summary first
-      loadMomentsSummary();
-
-      // Then fetch user stats from Hackatime
-      fetch(`/api/hackatime/stats/${slackId}`)
-        .then(response => response.json())
-        .then(data => {
-          const statsDiv = document.getElementById('stats');
-          const statsContent = document.getElementById('statsContent');
-          const projectSelect = document.getElementById('project');
-          
-          // Display relevant stats
-          if (data && data.data) {
-            statsDiv.style.display = 'block';
-            const totalSeconds = data.data.total_seconds;
-            const hours = Math.floor(totalSeconds / 3600);
-            const minutes = Math.floor((totalSeconds % 3600) / 60);
-            statsContent.innerHTML = `
-              Total time spent: ${hours} hours ${minutes} minutes<br>
-              Projects: ${data.data.projects.length || 0}
-            `;
-
-            // Populate project dropdown
-            if (data.data.projects && data.data.projects.length > 0) {
-              // Sort projects by time spent (descending)
-              const sortedProjects = data.data.projects.sort((a, b) => b.total_seconds - a.total_seconds);
-              
-              sortedProjects.forEach(project => {
-                if (project.total_seconds > 0) { // Only show projects with time logged
-                  const hours = project.hours;
-                  const minutes = project.minutes;
-                  const timeText = hours > 0 ? 
-                    `${hours}h ${minutes}m` : 
-                    `${minutes}m`;
-                  
-                  const option = document.createElement('option');
-                  option.value = project.name;
-                  option.textContent = `${project.name} (${timeText})`;
-                  projectSelect.appendChild(option);
-                }
-              });
-            }
-          }
-        })
-        .catch(error => {
-          console.error('Error fetching stats:', error);
-          const statsDiv = document.getElementById('stats');
-          statsDiv.style.display = 'block';
-          statsDiv.innerHTML = '<div class="error-message">Failed to load project stats. Please try again later.</div>';
-        });
-    }
-
-    async function loadMomentsSummary() {
-      try {
-        console.log('Fetching moments for slack_id:', slackId);
-        const response = await fetch(`/api/moments?slack_id=${slackId}`);
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('Received moments data:', data);
-        
-        const moments = data.records || [];
-        
-        if (moments.length === 0) {
-          console.log('No moments found');
-          document.getElementById('moments-summary').style.display = 'none';
-          return;
-        }
-
-        // Calculate stats
-        const total = moments.reduce((sum, record) => {
-          const hours = parseFloat(record.fields.hours) || 0;
-          console.log('Adding hours:', hours);
-          return sum + hours;
+      // Load moments summary
+      if (data.moments.length > 0) {
+        // Calculate stats from duration_seconds
+        const total = data.moments.reduce((sum, record) => {
+          const seconds = parseInt(record.fields.duration_seconds) || 0;
+          return sum + seconds;
         }, 0);
 
-        const accepted = moments.filter(r => r.fields.status === 'accepted')
-          .reduce((sum, record) => sum + (parseFloat(record.fields.hours) || 0), 0);
-        const rejected = moments.filter(r => r.fields.status === 'rejected')
-          .reduce((sum, record) => sum + (parseFloat(record.fields.hours) || 0), 0);
-        const pending = total - accepted - rejected;
+        const approved = data.moments
+          .filter(r => r.fields.status === 'approved')
+          .reduce((sum, record) => sum + (parseInt(record.fields.duration_seconds) || 0), 0);
+        
+        const rejected = data.moments
+          .filter(r => r.fields.status === 'rejected')
+          .reduce((sum, record) => sum + (parseInt(record.fields.duration_seconds) || 0), 0);
+        
+        const pending = total - approved - rejected;
 
-        console.log('Calculated stats:', { total, accepted, rejected, pending });
+        // Convert seconds to hours for display
+        const secondsToHours = (seconds) => (seconds / 3600).toFixed(1);
 
         // Update stats display
-        document.getElementById('total-hours').textContent = total.toFixed(2) + ' hrs';
-        document.getElementById('pending-hours').textContent = pending.toFixed(2) + ' hrs';
-        document.getElementById('accepted-hours').textContent = accepted.toFixed(2) + ' hrs';
-        document.getElementById('rejected-hours').textContent = rejected.toFixed(2) + ' hrs';
+        document.getElementById('total-hours').textContent = secondsToHours(total) + ' hrs';
+        document.getElementById('pending-hours').textContent = secondsToHours(pending) + ' hrs';
+        document.getElementById('accepted-hours').textContent = secondsToHours(approved) + ' hrs';
+        document.getElementById('rejected-hours').textContent = secondsToHours(rejected) + ' hrs';
 
         // Create recent moments boxes
         const recentMomentsContainer = document.getElementById('recent-moments');
         recentMomentsContainer.innerHTML = '';
 
-        moments.slice(0, 10).forEach(moment => {
-          const hours = parseFloat(moment.fields.hours) || 0;
+        data.moments.slice(0, 10).forEach(moment => {
+          const seconds = parseInt(moment.fields.duration_seconds) || 0;
+          const hours = secondsToHours(seconds);
           const status = moment.fields.status || 'pending';
           
           const box = document.createElement('div');
           box.className = `moment-box moment-${status}`;
-          box.textContent = hours.toFixed(1);
+          box.textContent = hours;
           
-          // Add tooltip with description
-          if (moment.fields.description) {
-            box.title = moment.fields.description;
+          // Add tooltip with description and project
+          const tooltip = [
+            moment.fields.project,
+            moment.fields.description
+          ].filter(Boolean).join('\n');
+          
+          if (tooltip) {
+            box.title = tooltip;
           }
           
           recentMomentsContainer.appendChild(box);
@@ -454,11 +479,78 @@
 
         // Show the moments summary section
         document.getElementById('moments-summary').style.display = 'block';
-      } catch (error) {
-        console.error('Error loading moments:', error);
-        // Don't show the moments summary section if there's an error
-        document.getElementById('moments-summary').style.display = 'none';
       }
+
+      // Load projects
+      if (data.projects.length > 0) {
+        const projectSelect = document.getElementById('project');
+        
+        // Sort projects by time spent (descending)
+        const sortedProjects = data.projects
+          .sort((a, b) => b.total_seconds - a.total_seconds)
+          .filter(project => project.total_seconds > 0);
+        
+        sortedProjects.forEach(project => {
+          const hours = Math.floor(project.total_seconds / 3600);
+          const minutes = Math.floor((project.total_seconds % 3600) / 60);
+          const timeText = hours > 0 ? 
+            `${hours}h ${minutes}m` : 
+            `${minutes}m`;
+          
+          const option = document.createElement('option');
+          option.value = project.name;
+          option.textContent = `${project.name} (${timeText})`;
+          projectSelect.appendChild(option);
+        });
+      }
+
+      // Load cards
+      if (data.cards.length > 0) {
+        const cardsGrid = document.querySelector('.cards-grid');
+        cardsGrid.innerHTML = ''; // Clear existing cards
+
+        data.cards.forEach(card => {
+          const cardElement = document.createElement('div');
+          cardElement.className = 'card-item';
+          cardElement.dataset.cardId = card.id;
+          
+          // Create name element
+          const nameElement = document.createElement('div');
+          nameElement.className = 'card-name';
+          nameElement.textContent = card.name;
+          cardElement.appendChild(nameElement);
+          
+          // Create tooltip with requirements
+          if (card.requirements) {
+            cardElement.title = card.requirements;
+          }
+          
+          // Add flavor text if available
+          if (card.flavor && card.flavor.length > 0) {
+            const flavorElement = document.createElement('div');
+            flavorElement.className = 'card-description';
+            flavorElement.textContent = Array.isArray(card.flavor) ? card.flavor[0] : card.flavor;
+            cardElement.appendChild(flavorElement);
+          }
+          
+          cardElement.onclick = () => {
+            cardElement.classList.toggle('selected');
+            updateSelectedCards();
+          };
+          cardsGrid.appendChild(cardElement);
+        });
+
+        document.querySelector('.cards-section').style.display = 'block';
+      }
+    }
+
+    // Initialize the page
+    initializePage();
+
+    function updateSelectedCards() {
+      const selectedCards = Array.from(document.querySelectorAll('.card-item.selected'))
+        .map(card => card.dataset.cardId);
+      document.getElementById('selected_cards').value = selectedCards.join(',');
     }
 
     document.getElementById('submitForm').addEventListener('submit', async function(e) {
@@ -504,19 +596,9 @@
           throw new Error(result.message || result.error || 'Failed to submit stretch');
         }
 
-        // Show success message
-        const successMessage = document.createElement('div');
-        successMessage.className = 'success-message';
-        successMessage.textContent = 'Stretch submitted successfully! 🎉';
-        this.insertBefore(successMessage, submitButton);
-
-        // Clear form
-        this.reset();
-        
-        // Remove success message after 5 seconds
-        setTimeout(() => {
-          successMessage.remove();
-        }, 5000);
+        // Show alert and reload page when dismissed
+        alert('Stretch submitted successfully! 🎉');
+        window.location.reload();
 
       } catch (error) {
         console.error('Error submitting form:', error);
