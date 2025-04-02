@@ -308,6 +308,10 @@ cards:
   the_mycologist:
     name: The Mycologist
     arcanum: hacker
+    flavor:
+      - You're a bit of a fun guy (or gal)
+      - There's nothing wrong with something that's old
+      - Something old is new again
     requirements: |
       pick up and old project of yours and do one of the following:
       - add a new feature to an old project
