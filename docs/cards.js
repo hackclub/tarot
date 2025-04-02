@@ -51,6 +51,11 @@ function createCardElement(key, card) {
     cardDiv.appendChild(title);
     cardDiv.appendChild(content);
   }
+
+  // Add click handler to open modal
+  cardDiv.addEventListener('click', () => {
+    openModal(card);
+  });
   
   return cardDiv;
 }

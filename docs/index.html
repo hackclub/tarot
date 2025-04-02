@@ -280,6 +280,84 @@
       left: 0;
       border-radius: 1rem;
     }
+
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+      padding: 2rem;
+      border-radius: 1rem;
+      max-width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 
+        0 0 0 1px rgba(255, 255, 255, 0.1),
+        0 4px 8px rgba(0, 0, 0, 0.2),
+        0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      transition: color 0.3s ease;
+    }
+
+    .modal-close:hover {
+      color: white;
+    }
+
+    .modal-title {
+      font-family: 'Cinzel', serif;
+      font-size: 2rem;
+      color: #ffd700;
+      margin: 0 0 1rem;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    }
+
+    .modal-image {
+      width: 100%;
+      max-height: 50vh;
+      object-fit: contain;
+      margin: 1rem 0;
+      border-radius: 0.5rem;
+    }
+
+    .modal-content-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.9);
+      margin: 1rem 0;
+    }
+
+    .modal-flavor {
+      font-style: italic;
+      color: rgba(255, 255, 255, 0.7);
+      margin: 1rem 0;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
   </style>
   <script>
     let isShaderPaused = false;
@@ -402,5 +480,68 @@
     </div>
     <canvas id="canvas"></canvas>
   </div>
+
+  <!-- Modal -->
+  <div id="cardModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+      <h2 class="modal-title"></h2>
+      <img class="modal-image" src="" alt="">
+      <div class="modal-content-text"></div>
+      <div class="modal-flavor"></div>
+    </div>
+  </div>
+
+  <script>
+    function openModal(card) {
+      const modal = document.getElementById('cardModal');
+      const title = modal.querySelector('.modal-title');
+      const image = modal.querySelector('.modal-image');
+      const content = modal.querySelector('.modal-content-text');
+      const flavor = modal.querySelector('.modal-flavor');
+
+      title.textContent = card.name;
+      if (card.image) {
+        image.src = `cards/${card.image}`;
+        image.style.display = 'block';
+      } else {
+        image.style.display = 'none';
+      }
+      // Convert newlines to <br> tags for proper formatting
+      content.innerHTML = card.requirements.replace(/\n/g, '<br>');
+      
+      // Handle flavor text - if it's an array, pick a random line
+      if (Array.isArray(card.flavor)) {
+        const randomIndex = Math.floor(Math.random() * card.flavor.length);
+        flavor.textContent = card.flavor[randomIndex];
+      } else {
+        flavor.textContent = card.flavor;
+      }
+
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('cardModal');
+      modal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const modal = document.getElementById('cardModal');
+      if (event.target === modal) {
+        closeModal();
+      }
+    }
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeModal();
+      }
+    });
+  </script>
 </body>
 </html>
