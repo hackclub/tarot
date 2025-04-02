@@ -8,7 +8,7 @@ const port = process.env.PORT || 3030
 
 // Initialize Slack bot with your token and channel ID
 const slackToken = process.env.SLACK_BOT_TOKEN
-const slackChannelId = 'C08KN8PKPE3'
+const slackChannelId = 'C0266FRGT'
 
 if (!slackToken) {
   console.error('Missing required environment variable: SLACK_BOT_TOKEN')
