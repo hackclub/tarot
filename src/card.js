@@ -21,6 +21,7 @@ const cards = [
   "The Sun",
   "Judgement",
   "The World",
+<<<<<<< Updated upstream
 ];
 
 const designatedChannel = "#draw-tarot";
@@ -33,10 +34,68 @@ function drawCard(channelName) {
 
   if (channelName !== designatedChannel) {
     return `This command is only allowed in the designated channel: ${designatedChannel}.`;
+=======
+]
+
+const designatedChannel = "#draw-tarot";
+
+const userCards = {
+  alice: ["The Fool", "The Magician"],
+  bob: ["The High Priestess", "The Empress"],
+};
+
+function drawCard(channelName) {
+  if (channelName !== designatedChannel) {
+    return `Error: Drawing cards is only allowed in the designated channel: ${designatedChannel}.`;
+>>>>>>> Stashed changes
   }
 
   const randomIndex = Math.floor(Math.random() * cards.length);
   return cards[randomIndex];
 }
 
+<<<<<<< Updated upstream
 module.exports = { drawCard };
+=======
+function viewHand(user, channelName) {
+  if (channelName !== designatedChannel) {
+    return `Error: Viewing hands is only allowed in the designated channel: ${designatedChannel}.`;
+  }
+
+  if (!userCards[user]) {
+    return `Error: User "${user}" does not exist.`;
+  }
+
+  return `${user}'s hand: ${userCards[user].join(", ")}`;
+}
+
+// Function to trade cards between users
+function tradeCards(user1, card1, user2, card2, channelName) {
+  if (channelName !== designatedChannel) {
+    return `Error: Trades are only allowed in the designated channel: ${designatedChannel}.`;
+  }
+
+  // Check if both users exist
+  if (!userCards[user1] || !userCards[user2]) {
+    return `Error: One or both users do not exist.`;
+  }
+
+
+  if (!userCards[user1].includes(card1)) {
+    return `Error: ${user1} does not own the card "${card1}".`;
+  }
+  if (!userCards[user2].includes(card2)) {
+    return `Error: ${user2} does not own the card "${card2}".`;
+  }
+
+  userCards[user1] = userCards[user1].filter((card) => card !== card1);
+  userCards[user2] = userCards[user2].filter((card) => card !== card2);
+
+  userCards[user1].push(card2);
+  userCards[user2].push(card1);
+
+  return `Trade successful! ${user1} traded "${card1}" with ${user2} for "${card2}".`;
+}
+
+module.exports = { cards, userCards, drawCard, viewHand, tradeCards };
+>>>>>>> Stashed changes
