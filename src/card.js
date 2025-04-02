@@ -25,53 +25,93 @@ const cards = [
 
 const designatedChannel = "#draw-tarot";
 
-const userCards = {
-  alice: ["The Fool", "The Magician"],
-  bob: ["The High Priestess", "The Empress"],
-};
+const userCards = {};
+const pendingTrades = {};
 
-function drawCard(channelName) {
-  if (channelName !== designatedChannel) {
-    return `Error: Drawing cards is only allowed in the designated channel: ${designatedChannel}.`;
+// function to initialize a user with an empty hand
+function initializeUser(userId) {
+  if (!userCards[userId]) {
+    userCards[userId] = [];
   }
-
-  const randomIndex = Math.floor(Math.random() * cards.length);
-  return cards[randomIndex];
 }
 
-function viewHand(user, channelName) {
-  if (channelName !== designatedChannel) {
-    return `Error: Viewing hands is only allowed in the designated channel: ${designatedChannel}.`;
-  }
-
-  if (!userCards[user]) {
-    return `Error: User "${user}" does not exist.`;
-  }
-
-  return `${user}'s hand: ${userCards[user].join(", ")}`
-function tradeCards(user1, card1, user2, card2, channelName) {
+// Function to initiate a trade
+function initiateTrade(user1Id, card1, user2Id, card2, channelName, sendMessage) {
   if (channelName !== designatedChannel) {
     return `Error: Trades are only allowed in the designated channel: ${designatedChannel}.`;
-  } 
-
-  if (!userCards[user1] || !userCards[user2]) {
-    return `Error: One or both users do not exist.`;
   }
 
-  if (!userCards[user1].includes(card1)) {
-    return `Error: ${user1} does not own the card "${card1}".`;
+  initializeUser(user1Id);
+  initializeUser(user2Id);
+
+  if (!userCards[user1Id].includes(card1)) {
+    return `Error: ${user1Id} does not own the card "${card1}".`;
   }
-  if (!userCards[user2].includes(card2)) {
-    return `Error: ${user2} does not own the card "${card2}".`;
+
+  if (!userCards[user2Id].includes(card2)) {
+    return `Error: ${user2Id} does not own the card "${card2}".`;
   }
 
-  userCards[user1] = userCards[user1].filter((card) => card !== card1);
-  userCards[user2] = userCards[user2].filter((card) => card !== card2);
+  pendingTrades[user2Id] = { from: user1Id, card1, card2 };
 
-  userCards[user1].push(card2);
-  userCards[user2].push(card1);
+  sendMessage(user2Id, {
+    text: `${user1Id} wants to trade "${card1}" for your "${card2}".`,
+    attachments: [
+      {
+        text: "Do you accept this trade?",
+        fallback: "You cannot respond to this trade.",
+        callback_id: "trade_action",
+        actions: [
+          {
+            name: "accept",
+            text: "Accept",
+            type: "button",
+            value: "accept",
+          },
+          {
+            name: "reject",
+            text: "Reject",
+            type: "button",
+            value: "reject",
+          },
+        ],
+      },
+    ],
+  });
 
-  return `Trade successful! ${user1} traded "${card1}" with ${user2} for "${card2}".`;
+  return `Trade request sent to ${user2Id}.`;
 }
 
-module.exports = { cards, userCards, drawCard, viewHand, tradeCards };
+// Function to handle trade acceptance
+function acceptTrade(user2Id) {
+  const trade = pendingTrades[user2Id];
+  if (!trade) {
+    return `Error: No pending trade request for ${user2Id}.`;
+  }
+
+  const { from: user1Id, card1, card2 } = trade;
+
+  userCards[user1Id] = userCards[user1Id].filter((card) => card !== card1);
+  userCards[user2Id] = userCards[user2Id].filter((card) => card !== card2);
+
+  userCards[user1Id].push(card2);
+  userCards[user2Id].push(card1);
+
+  delete pendingTrades[user2Id];
+
+  return `Trade successful! ${user1Id} traded "${card1}" with ${user2Id} for "${card2}".`;
+}
+
+// function to handle trade rejection
+function rejectTrade(user2Id) {
+  const trade = pendingTrades[user2Id];
+  if (!trade) {
+    return `Error: No pending trade request for ${user2Id}.`;
+  }
+
+  delete pendingTrades[user2Id];
+
+  return `Trade request rejected by ${user2Id}.`;
+}
+
+module.exports = { cards, userCards, initiateTrade, acceptTrade, rejectTrade };
