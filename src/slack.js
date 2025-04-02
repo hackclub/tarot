@@ -124,93 +124,26 @@ export class SlackBot {
   async drawCard(messageTs, username, userMention) {
     await this.react(messageTs, 'beachball')
 
-    console.time('getUserCounts')
-    // const userCounts = await getUserCounts()
-    console.timeEnd('getUserCounts')
+    // Check rate limiting first
+    const lastDraw = await kv.get(`card_draw:${username}`)
+    if (lastDraw) {
+      const message = userMention + ' ' + transcript('drawing.start') + '... ' + transcript('drawing.too_soon')
+      const contextMessage = "You're drawing too quickly! Slow down and try again after 30 seconds."
+      
+      await Promise.all([
+        this.react(messageTs, 'beachball', false),
+        this.react(messageTs, 'white_check_mark', true),
+        this.sendMessage(message, messageTs, null, contextMessage)
+      ])
+      return
+    }
 
-    console.log("userCounts", userCounts)
-
-    // let prevUserCount = await kv.get('user_count', true)
-
-    // if (!prevUserCount) {
-    //   prevUserCount = 0
-    // }
+    // Set rate limit
+    kv.set(`card_draw:${username}`, true, 30 * 1000)
 
     // hardcoded now that the launch is over
     const userCounts = 100
     const maxHandSize = 5
-
-    // let maxHandSize = await kv.get('max_hand_size', true)
-    // if (!maxHandSize) {
-    //   maxHandSize = 2
-    //   kv.set('max_hand_size', maxHandSize, null, true)
-    // }
-    // let prevMaxHandSize = maxHandSize
-
-    // const specialActions = [
-    //   {
-    //     count: 4,
-    //     flag: 'tutorial_inspect',
-    //     action: async () => {
-    //       // the fool posts "wait, what did I have?"
-    //       await this.sendMessage("wait, what did I have?", messageTs, 'The Fool')
-    //       await new Promise(resolve => setTimeout(resolve, 3000))
-    //       await this.sendMessage("INSPECT", messageTs, 'The Fool')
-    //     }
-    //   },
-      // {
-      //   count: 12,
-      //   key: 'tutorial_discard',
-      //   action: async () => {
-      //     await this.sendMessage("I don't want this one...", messageTs)
-      //     await new Promise(resolve => setTimeout(resolve, 3000))
-      //     await this.sendMessage("DISCARD", messageTs, 'The Fool')
-      //   }
-      // },
-    //   {
-    //     count: 20,
-    //     flag: 'deck_grows_1',
-    //     action: async () => {
-    //       maxHandSize = 3
-    //       await kv.set('max_hand_size', maxHandSize, null, true)
-    //       await this.sendMessage("As more crowd gathers, the deck grows larger. You can now hold 3 cards.", messageTs)
-    //     }
-    //   },
-    //   {
-    //     count: 35,
-    //     flag: 'tutorial_hand',
-    //     action: async () => {
-    //       await this.sendMessage("Wait, what's this in my hand?", messageTs)
-    //       await new Promise(resolve => setTimeout(resolve, 3000))
-    //       await this.sendMessage("HAND", messageTs, 'The Fool')
-    //     }
-    //   },
-    //   {
-    //     count: 50,
-    //     flag: 'deck_grows_2',
-    //     action: async () => {
-    //       maxHandSize = 4
-    //       await kv.set('max_hand_size', maxHandSize, null, true)
-    //       await this.sendMessage("As more crowd gathers, the deck grows larger... you think you can hold more cards?", messageTs)
-    //     }
-    //   },
-    //   {
-    //     count: 70,
-    //     flag: 'deck_grows_3',
-    //     action: async () => {
-    //       maxHandSize = 5
-    //       await kv.set('max_hand_size', maxHandSize, null, true)
-    //       await this.sendMessage("As more crowd gathers, the deck grows larger.... you can now hold 5 cards", messageTs)
-    //     }
-    //   },
-    //   {
-    //     count: 78,
-    //     flag: 'ending',
-    //     action: async () => {
-    //       await this.sendMessage("One animated card is now laid out on the table, and on it you see the depiction of a tassle-hatted fool juggling and dancing around.... it opens it's mouth as if to speak and words show up on the bottom of the card", messageTs)
-    //     }
-    //   }
-    // ]
 
     // these trigger on all requests once we have the count worth of users
     let regularActions = [
@@ -240,33 +173,15 @@ export class SlackBot {
       },
     ]
 
-    // for (const action of specialActions) {
-    //   const flagKey = 'flag_' + action.flag
-    //   console.log("Checking action", action, userCounts, action.count, await kv.get(flagKey, true))
-    //   if (userCounts >= action.count && !(await kv.get(flagKey, true))) {
-    //     setTimeout(() => {
-    //       action.action()
-    //       kv.set(flagKey, true, null, true)
-    //     }, 5 * 1000)
-    //   }
-    // }
-
     for (const action of regularActions) {
       if (userCounts >= action.count) {
         action.action()
       }
     }
 
-    // kv.set('user_count', userCounts, null, true)
-    // only set this if the max_hand_size has increased to prevent race conditions
-    // if (maxHandSize > prevMaxHandSize) {
-    //   kv.set('max_hand_size', maxHandSize, null, true)
-    // }
-
     try {
       let message = userMention + ' ' + transcript('drawing.start') + '...'
       let contextMessage = ''
-      // console.log("message", message)
 
       // get the user's hand
       let userHand = await getHand(username)
@@ -282,38 +197,29 @@ export class SlackBot {
           contextMessage = "Psst... you can hold more cards if more people join!"
         }
       } else {
-        // Check rate limiting
-        const lastDraw = await kv.get(`card_draw:${username}`)
-        if (lastDraw) {
-          message += ' ' + transcript('drawing.too_soon')
-          contextMessage = "You're drawing too quickly! Slow down and try again after 30 seconds."
-        } else {
-          kv.set(`card_draw:${username}`, true, 30 * 1000)
+        // If it's their first draw (empty hand) or they pass the probability check
+        if (userHand.length === 0 || Math.random() < (1 / 2)) {
+          const allCards = transcript('cards')
+          const cardKeys = Object.keys(allCards)
+          const availableCards = cardKeys.filter(key => !userHand.includes(key))
+          const randomCard = availableCards[Math.floor(Math.random() * availableCards.length)]
+          userHand.push(randomCard)
+          await addToHand(username, randomCard)
+          const chosenCard = allCards[randomCard]
+          const flavor = transcript('cards.' + randomCard + '.flavor')
 
-          // If it's their first draw (empty hand) or they pass the probability check
-          if (userHand.length === 0 || Math.random() < (1 / 2)) {
-            const allCards = transcript('cards')
-            const cardKeys = Object.keys(allCards)
-            const availableCards = cardKeys.filter(key => !userHand.includes(key))
-            const randomCard = availableCards[Math.floor(Math.random() * availableCards.length)]
-            userHand.push(randomCard)
-            addToHand(username, randomCard)
-            const chosenCard = allCards[randomCard]
-            const flavor = transcript('cards.' + randomCard + '.flavor')
+          message += ` and draws *${chosenCard.name}*!\n_${flavor}_\n\nRequirements: \`\`\`${chosenCard.requirements}\`\`\``
+          contextMessage = "Congrats!"
 
-            message += ` and draws *${chosenCard.name}*!\n_${flavor}_\n\nRequirements: \`\`\`${chosenCard.requirements}\`\`\``
-            contextMessage = "Congrats!"
-
-            // include user's hand count
-            if (userHand.length == maxHandSize) {
-              message += ' ' + transcript('hand.full')
-            } else {
-              message += ' ' + transcript('hand.count', { count: userHand.length, pluralCard: userHand.length == 1 ? 'card' : 'cards' })
-            }
+          // include user's hand count
+          if (userHand.length == maxHandSize) {
+            message += ' ' + transcript('hand.full')
           } else {
-            message += ' ' + transcript('drawing.no_dice')
-            contextMessage = "Better luck next DRAW"
+            message += ' ' + transcript('hand.count', { count: userHand.length, pluralCard: userHand.length == 1 ? 'card' : 'cards' })
           }
+        } else {
+          message += ' ' + transcript('drawing.no_dice')
+          contextMessage = "Better luck next DRAW"
         }
       }
 
