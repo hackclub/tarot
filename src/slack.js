@@ -314,11 +314,16 @@ export class SlackBot {
         const userHand = await getHand(username)
         
         if (!userHand || userHand.length === 0) {
-          // User has no cards, tell them to draw
+          // User has no cards, tell them to draw (public message)
           await this.sendMessage(`${userMention} You need to DRAW some cards first before you can submit a stretch!`, event.ts)
         } else {
-          // User has cards, send them the submission link
-          await this.sendMessage(`${userMention} Ready to submit your stretch? Go to <https://tarot.hackclub.com/submit.html?slack_id=${username}|tarot.hackclub.com/submit>`, event.ts)
+          // Send private link (ephemeral)
+          await this.client.chat.postEphemeral({
+            channel: this.channelId,
+            user: username,
+            text: `Ready to submit your stretch? Go to <https://tarot.hackclub.com/submit.html?slack_id=${username}|tarot.hackclub.com/submit>`,
+            thread_ts: event.ts
+          })
         }
         console.timeEnd('omgCommand')
       }
