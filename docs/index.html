@@ -366,6 +366,30 @@
       padding-top: 1rem;
       border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
+
+    /* Footer styles */
+    footer {
+      width: 100%;
+      padding: 2rem;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      margin-top: 4rem;
+    }
+
+    footer a {
+      color: #ffd700;
+      text-decoration: none;
+      transition: color 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    footer a:hover {
+      color: #fff;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
   </style>
   <script>
     let isShaderPaused = false;
@@ -488,6 +512,13 @@
     </div>
     <canvas id="canvas"></canvas>
   </div>
+
+  <!-- Footer -->
+  <footer>
+    <a href="https://github.com/hackclub/tarot" target="_blank">
+      View on GitHub
+    </a>
+  </footer>
 
   <!-- Modal -->
   <div id="cardModal" class="modal">
