@@ -273,14 +273,32 @@ void main() {
 		const rect = this.canvas.getBoundingClientRect();
 
 		// Set the canvas size in pixels
-    this.canvas.width = window.innerWidth
-    this.canvas.height = window.innerHeight
+		this.canvas.width = window.innerWidth;
+		this.canvas.height = window.innerHeight;
 
 		// Update uniforms with the new dimensions
 		this.uniforms.iResolution = [this.canvas.width, this.canvas.height];
 
 		// Update the viewport
 		this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+
+		// If shader is paused, re-render the last frame to maintain the image
+		if (window.isShaderPaused) {
+			this.gl.useProgram(this.program);
+			// Update uniforms
+			this.gl.uniform1f(this.uniformLocations.iTime, this.uniforms.iTime);
+			this.gl.uniform2fv(this.uniformLocations.iResolution, this.uniforms.iResolution);
+			this.gl.uniform2fv(this.uniformLocations.iMouse, this.uniforms.iMouse);
+			this.gl.uniform4fv(this.uniformLocations.uColor1, this.uniforms.uColor1);
+			this.gl.uniform4fv(this.uniformLocations.uColor2, this.uniforms.uColor2);
+			this.gl.uniform4fv(this.uniformLocations.uColor3, this.uniforms.uColor3);
+			this.gl.uniform1f(this.uniformLocations.uSpinAmount, this.uniforms.uSpinAmount);
+			this.gl.uniform1f(this.uniformLocations.uSpinEase, this.uniforms.uSpinEase);
+			this.gl.uniform1f(this.uniformLocations.uContrast, this.uniforms.uContrast);
+			this.gl.uniform1f(this.uniformLocations.uPixelSizeFac, this.uniforms.uPixelSizeFac);
+			// Draw the last frame
+			this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
+		}
 	}
 
 	setFragmentShader(frag) {
