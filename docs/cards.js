@@ -137,6 +137,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Initialize scramble effect after cards are added
     initScrambledText();
+
+    // If slack_id is present, scroll to the Arcana section
+    if (slackId) {
+      arcanaSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   } else {
     console.error('Invalid cards data:', cards);
   }
