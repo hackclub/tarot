@@ -17,7 +17,8 @@ const updateAirtableHands = async () => {
   // update in batches of 10
   for (let i = 0; i < userHands.length; i += 10) {
     const batch = userHands.slice(i, i + 10)
-    await fetch(`https://api.airtable.com/v0/${airtableBase}/users`, {
+    console.log('Sending batch to Airtable:', JSON.stringify(batch, null, 2))
+    const response = await fetch(`https://api.airtable.com/v0/${airtableBase}/users`, {
       method: 'PATCH',
       headers: {
         'Authorization': `Bearer ${process.env.AIRTABLE_API_KEY}`,
@@ -27,13 +28,17 @@ const updateAirtableHands = async () => {
         performUpsert: {
           fieldsToMergeOn: ['slack_uid']
         },
-        records: batch 
+        records: batch
       })
-    }).then(r => r.json())
+    })
+    const result = await response.json()
+    console.log('Airtable response:', JSON.stringify(result, null, 2))
   }
 
   const numOfRequests = Math.ceil(userHands.length / 10)
-  setTimeout(updateAirtableHands, numOfRequests * 1000 + (5 * 1000))
+  const waitTime = numOfRequests * 1000 + (5 * 1000)
+  console.log('Waiting', waitTime, 'ms before next batch')
+  setTimeout(updateAirtableHands, waitTime)
 }
 
 updateAirtableHands()
