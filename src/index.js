@@ -2,9 +2,13 @@ import express from 'express'
 import { SlackBot } from './slack.js'
 import { transcript } from './transcript.js'
 import { kv } from './kv.js'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
 const app = express()
 const port = process.env.PORT || 3030
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 // Initialize Slack bot with your token and channel ID
 const slackToken = process.env.SLACK_BOT_TOKEN
@@ -19,6 +23,9 @@ const slackBot = new SlackBot(slackToken, slackChannelId)
 
 // Middleware to parse JSON bodies
 app.use(express.json())
+
+// Serve static files from the docs directory
+app.use(express.static(path.join(__dirname, '../docs')))
 
 // Health check endpoint
 app.get('/up', (req, res) => {
