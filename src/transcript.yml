@@ -193,6 +193,7 @@ cards:
       - no text in your project at all
   the_magician:
     name: The Magician
+    image: "the_magician.png"
     arcanum: major
     flavor:
       - Your current situation must be seen as one element of a much larger plan
@@ -204,6 +205,7 @@ cards:
       - build a tool that someone else builds their own project with
   wheel_of_fortune:
     name: The Wheel of Fortune
+    image: "wheel_of_fortune.png"
     arcanum: major
     flavor:
       - You're feeling a bit lucky
@@ -284,7 +286,10 @@ cards:
       Take a project you never finished. Ship it without the total linecount of code changing. You may need to remove some features.
   baby_dino:
     name: Baby Dino
+    image: "baby_dino.png"
     arcanum: hacker
+    flavor:
+      - never looking back!
     requirements: |
       do one of the following:
       - animate a talking character
