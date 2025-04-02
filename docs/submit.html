@@ -199,6 +199,67 @@
       opacity: 0.7;
       cursor: not-allowed;
     }
+
+    .moments-summary {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .moment-stat {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      padding: 1rem;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .moment-stat-label {
+      font-family: 'Cinzel', serif;
+      color: #ffd700;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .moment-stat-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .recent-moments {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .moment-box {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      font-weight: bold;
+      color: white;
+      font-size: 1.1rem;
+    }
+
+    .moment-pending {
+      background: rgba(255, 215, 0, 0.3);
+      border: 1px solid rgba(255, 215, 0, 0.5);
+    }
+
+    .moment-accepted {
+      background: rgba(0, 255, 0, 0.3);
+      border: 1px solid rgba(0, 255, 0, 0.5);
+    }
+
+    .moment-rejected {
+      background: rgba(255, 0, 0, 0.3);
+      border: 1px solid rgba(255, 0, 0, 0.5);
+    }
   </style>
 </head>
 <body>
@@ -211,6 +272,30 @@
       <div id="error" style="display: none;" class="error-message">
         Error: No Slack ID provided. Please access this page through the proper channel.
       </div>
+
+      <!-- New Moments Summary Section -->
+      <div id="moments-summary" style="display: none;">
+        <div class="moments-summary">
+          <div class="moment-stat">
+            <div class="moment-stat-label">Total Hours</div>
+            <div id="total-hours" class="moment-stat-value">0.00 hrs</div>
+          </div>
+          <div class="moment-stat">
+            <div class="moment-stat-label">Pending Hours</div>
+            <div id="pending-hours" class="moment-stat-value">0.00 hrs</div>
+          </div>
+          <div class="moment-stat">
+            <div class="moment-stat-label">Accepted Hours</div>
+            <div id="accepted-hours" class="moment-stat-value">0.00 hrs</div>
+          </div>
+          <div class="moment-stat">
+            <div class="moment-stat-label">Rejected Hours</div>
+            <div id="rejected-hours" class="moment-stat-value">0.00 hrs</div>
+          </div>
+        </div>
+        <div id="recent-moments" class="recent-moments"></div>
+      </div>
+
       <div id="stats" style="display: none;" class="stats">
         <h3>Your Progress</h3>
         <div id="statsContent"></div>
@@ -254,7 +339,10 @@
       document.getElementById('slack_id').value = slackId;
       document.getElementById('submitForm').style.display = 'block';
       
-      // Fetch user stats from Hackatime
+      // Load moments summary first
+      loadMomentsSummary();
+
+      // Then fetch user stats from Hackatime
       fetch(`/api/hackatime/stats/${slackId}`)
         .then(response => response.json())
         .then(data => {
@@ -301,6 +389,76 @@
           statsDiv.style.display = 'block';
           statsDiv.innerHTML = '<div class="error-message">Failed to load project stats. Please try again later.</div>';
         });
+    }
+
+    async function loadMomentsSummary() {
+      try {
+        console.log('Fetching moments for slack_id:', slackId);
+        const response = await fetch(`/api/moments?slack_id=${slackId}`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Received moments data:', data);
+        
+        const moments = data.records || [];
+        
+        if (moments.length === 0) {
+          console.log('No moments found');
+          document.getElementById('moments-summary').style.display = 'none';
+          return;
+        }
+
+        // Calculate stats
+        const total = moments.reduce((sum, record) => {
+          const hours = parseFloat(record.fields.hours) || 0;
+          console.log('Adding hours:', hours);
+          return sum + hours;
+        }, 0);
+
+        const accepted = moments.filter(r => r.fields.status === 'accepted')
+          .reduce((sum, record) => sum + (parseFloat(record.fields.hours) || 0), 0);
+        const rejected = moments.filter(r => r.fields.status === 'rejected')
+          .reduce((sum, record) => sum + (parseFloat(record.fields.hours) || 0), 0);
+        const pending = total - accepted - rejected;
+
+        console.log('Calculated stats:', { total, accepted, rejected, pending });
+
+        // Update stats display
+        document.getElementById('total-hours').textContent = total.toFixed(2) + ' hrs';
+        document.getElementById('pending-hours').textContent = pending.toFixed(2) + ' hrs';
+        document.getElementById('accepted-hours').textContent = accepted.toFixed(2) + ' hrs';
+        document.getElementById('rejected-hours').textContent = rejected.toFixed(2) + ' hrs';
+
+        // Create recent moments boxes
+        const recentMomentsContainer = document.getElementById('recent-moments');
+        recentMomentsContainer.innerHTML = '';
+
+        moments.slice(0, 10).forEach(moment => {
+          const hours = parseFloat(moment.fields.hours) || 0;
+          const status = moment.fields.status || 'pending';
+          
+          const box = document.createElement('div');
+          box.className = `moment-box moment-${status}`;
+          box.textContent = hours.toFixed(1);
+          
+          // Add tooltip with description
+          if (moment.fields.description) {
+            box.title = moment.fields.description;
+          }
+          
+          recentMomentsContainer.appendChild(box);
+        });
+
+        // Show the moments summary section
+        document.getElementById('moments-summary').style.display = 'block';
+      } catch (error) {
+        console.error('Error loading moments:', error);
+        // Don't show the moments summary section if there's an error
+        document.getElementById('moments-summary').style.display = 'none';
+      }
     }
 
     document.getElementById('submitForm').addEventListener('submit', async function(e) {
