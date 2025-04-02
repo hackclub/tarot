@@ -4,9 +4,9 @@ import { transcript } from './transcript.js'
 import { kv } from './kv.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { mkdir, readFile, unlink, writeFile, readdir, stat } from 'fs/promises'
+import { mkdir, readFile, writeFile } from 'fs/promises'
 import fileUpload from 'express-fileupload'
-import FormData from 'form-data'
+import { cleanupOldFiles } from './garbage_collection.js'
 
 const app = express()
 const port = process.env.PORT || 3030
@@ -37,30 +37,6 @@ try {
 } catch (err) {
   if (err.code !== 'EEXIST') {
     console.error('Error creating temp directory:', err)
-  }
-}
-
-// Function to clean up old files
-async function cleanupOldFiles() {
-  try {
-    const uploadsDir = path.join(__dirname, '../docs/temp');
-    const files = await readdir(uploadsDir);
-    const now = Date.now();
-    const oneMinuteAgo = now - (60 * 1000); // 1 minute in milliseconds
-
-    for (const file of files) {
-      if (file === '.keep') continue; // Skip the .keep file
-      
-      const filePath = path.join(uploadsDir, file);
-      const stats = await stat(filePath);
-      
-      if (stats.mtimeMs < oneMinuteAgo) {
-        await unlink(filePath);
-        console.log(`Deleted old file: ${file}`);
-      }
-    }
-  } catch (err) {
-    console.error('Error cleaning up old files:', err);
   }
 }
 
