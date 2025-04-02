@@ -311,16 +311,16 @@ export class SlackBot {
       } else if (command === 'OMG') {
         console.time('omgCommand')
         // Get user's hand first
-        const userData = await getUser(username)
+        const { hand, auth_token } = await getUser(username)
         
-        if (!userData.hand || userData.hand.length === 0) {
+        if (!hand || hand.length === 0) {
           // User has no cards, tell them to draw (public message)
           await this.sendMessage(`${userMention} You need to DRAW some cards first before you can submit a stretch!`, event.ts)
         } else {
           // Send private link (ephemeral)
           const url = new URL('https://tarot.hackclub.com/submit.html')
-          if (userData.auth_token) {
-            url.searchParams.set('auth_token', userData.auth_token)
+          if (auth_token) {
+            url.searchParams.set('auth_token', auth_token)
             await this.client.chat.postEphemeral({
               channel: this.channelId,
               user: username,

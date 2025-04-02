@@ -23,16 +23,21 @@ const getUser = async (username) => {
   // get the hand from airtable
   // username should alphanumeric, nothing else, and start with U
   const safeUsername = username.replace(/[^a-zA-Z0-9]/g, '')
-  console.log('Looking up user with safeUsername:', safeUsername);
 
-  const response = await fetch('https://api2.hackclub.com/v0.1/Tarot/users')
-  if (!response.ok) {
-    console.error('Failed to fetch users from Airtable:', response.status, response.statusText);
-    throw new Error('Failed to fetch users');
-  }
-  const data = await response.json();
+  const url = `https://api.airtable.com/v0/appOkhzTn4Z3FI9gv/users?filterByFormula=%7Bslack_uid%7D%3D'${safeUsername}'&maxRecords=1`
+  const response = await fetch(url, {
+    headers: {
+      'Authorization': `Bearer ${process.env.AIRTABLE_API_KEY}`
+    }
+  })
   
-  const user = data.find(record => record.fields.slack_uid === safeUsername)
+  if (!response.ok) {
+    console.error('Failed to fetch user from Airtable:', response.status, response.statusText);
+    throw new Error('Failed to fetch user');
+  }
+  
+  const data = await response.json();
+  const user = data.records[0];
 
   return {
     hand: user?.fields?.hand?.split(',') || [],
