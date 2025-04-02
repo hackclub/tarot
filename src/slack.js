@@ -308,6 +308,19 @@ export class SlackBot {
         const targetUsername = mentionMatch ? mentionMatch[1] : null
         await this.showHand(event.ts, username, userMention, targetUsername)
         console.timeEnd('showHand')
+      } else if (command === 'OMG') {
+        console.time('omgCommand')
+        // Get user's hand first
+        const userHand = await getHand(username)
+        
+        if (!userHand || userHand.length === 0) {
+          // User has no cards, tell them to draw
+          await this.sendMessage(`${userMention} You need to DRAW some cards first before you can submit a stretch!`, event.ts)
+        } else {
+          // User has cards, send them the submission link
+          await this.sendMessage(`${userMention} Ready to submit your stretch? Go to <https://tarot.hackclub.com/submit.html?slack_id=${username}|tarot.hackclub.com/submit>`, event.ts)
+        }
+        console.timeEnd('omgCommand')
       }
     } catch (error) {
       console.error('Error handling message event:', error)
