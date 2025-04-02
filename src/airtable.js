@@ -5,6 +5,31 @@ import { kv } from "./kv"
 
 const airtableBase = "appOkhzTn4Z3FI9gv"
 
+const getHand = async (username) => {
+  // get the hand from airtable
+  // username should alphanumeric, nothing else, and start with U
+  const safeUsername = username.replace(/[^a-zA-Z0-9]/g, '')
+  const filterFormula = `{slack_uid} = '${safeUsername}'`
+  const maxRecords = 1
+  const select = {
+    fields: ['hand'],
+    filterByFormula: filterFormula,
+    maxRecords: maxRecords
+  }
+
+  const response = await fetch(`https://api.airtable.com/v0/${airtableBase}/users`, {
+    headers: {
+      'Authorization': `Bearer ${process.env.AIRTABLE_API_KEY}`
+    },
+    method: 'GET',
+    body: JSON.stringify(select)
+  })
+  const data = await response.json()
+  return data?.records[0]?.fields?.hand
+}
+
+export { getHand }
+
 const updateAirtableHands = async () => {
   const glob = new Glob("./kv/user_hand:*")
   const userHands = []
@@ -40,5 +65,3 @@ const updateAirtableHands = async () => {
   console.log('Waiting', waitTime, 'ms before next batch')
   setTimeout(updateAirtableHands, waitTime)
 }
-
-updateAirtableHands()

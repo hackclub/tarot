@@ -2,6 +2,7 @@ import { WebClient } from '@slack/web-api'
 import { transcript } from './transcript.js'
 import { kv } from './kv.js'
 import getUserCounts from './user_counts.js'
+import { getHand } from './airtable.js'
 
 export class SlackBot {
   constructor(token, channelId) {
@@ -345,7 +346,7 @@ export class SlackBot {
       let [_reaction, _time, userHand] = await Promise.all([
         this.react(messageTs, 'beachball'),
         new Promise(resolve => setTimeout(resolve, 1000)),
-        kv.get(`user_hand:${username}`, true)
+        getHand(username)
       ])
 
       if (!userHand) {
@@ -360,6 +361,9 @@ export class SlackBot {
         const handNames = userHand.map(cardKey => "`" + allCards[cardKey].name + "`").join(', ')
         response += transcript('hand.list', { cards: handNames })
       }
+
+      // Add link to view hand on website
+      response += `\n\nView your hand at: <https://hack.club/tarot/?slack_id=${username}|hack.club/tarot>`
 
       await Promise.all([
         this.react(messageTs, 'beachball', false),
