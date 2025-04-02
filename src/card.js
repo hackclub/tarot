@@ -21,4 +21,17 @@ const cards = [
   "The Sun",
   "Judgement",
   "The World",
-]
+];
+
+
+function drawCard(channelName) {
+  if (channelName !== "#draw-tarot") {
+    console.log("Only available in #draw-tarot.");
+    return;
+  }
+
+  const randomIndex = Math.floor(Math.random() * cards.length);
+  const drawnCard = cards[randomIndex];
+  console.log(`You drew: ${drawnCard}`);
+}
+module.exports = { drawCard };
