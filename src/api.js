@@ -40,6 +40,38 @@ export async function submitStretch(req, res) {
       });
     }
 
+    // Get total project time from Hackatime
+    const hackatimeResponse = await fetch(`https://hackatime.hackclub.com/api/v1/users/${slack_id}/stats?features=projects&start_date=2025-04-02`);
+    if (!hackatimeResponse.ok) {
+      throw new Error('Failed to fetch Hackatime stats');
+    }
+    const hackatimeData = await hackatimeResponse.json();
+    
+    // Find this project's total seconds
+    const projectStats = hackatimeData.projects.find(p => p.name === project);
+    if (!projectStats) {
+      throw new Error(`Project "${project}" not found in Hackatime data`);
+    }
+    const totalProjectSeconds = projectStats.total_seconds;
+    console.log('Total project seconds from Hackatime:', totalProjectSeconds);
+
+    // Get previous stretches for this project from our API
+    const momentsResponse = await fetch('https://api2.hackclub.com/v0.1/Tarot/moments');
+    if (!momentsResponse.ok) {
+      throw new Error('Failed to fetch previous moments');
+    }
+    const moments = await momentsResponse.json();
+    
+    // Calculate total seconds from previous stretches for this project
+    const previousStretchSeconds = moments
+      .filter(m => m.fields.slack_uid === slack_id && m.fields.project === project)
+      .reduce((sum, m) => sum + (m.fields.duration_seconds || 0), 0);
+    console.log('Previous stretch seconds:', previousStretchSeconds);
+
+    // Calculate new stretch duration
+    const durationSeconds = Math.max(0, totalProjectSeconds - previousStretchSeconds);
+    console.log('New stretch duration_seconds:', durationSeconds);
+
     const video = req.files.video;
 
     // Validate video file
@@ -72,6 +104,7 @@ export async function submitStretch(req, res) {
           'slack_uid': slack_id,
           'project': project,
           'description': description,
+          'duration_seconds': durationSeconds,
           'user_agent': req.headers['user-agent'],
           'ip_address': req.ip,
           'attachment': [{
@@ -106,6 +139,7 @@ export async function submitStretch(req, res) {
     res.json({ 
       status: 'success',
       message: 'Stretch submitted successfully',
+      duration_seconds: durationSeconds
     });
 
   } catch (error) {
