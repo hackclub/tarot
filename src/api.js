@@ -38,12 +38,8 @@ export async function submitStretch(req, res) {
     }
 
     // Get user data from Airtable using auth token
-    const response = await fetch('https://api2.hackclub.com/v0.1/Tarot/users');
-    if (!response.ok) {
-      throw new Error('Failed to fetch users');
-    }
-    const users = await response.json();
-    const user = users.find(u => u.fields.auth_token === auth_token);
+    const decodedAuthToken = decodeURIComponent(auth_token);
+    const user = await getUserByAuthToken(decodedAuthToken);
     
     if (!user) {
       return res.status(401).json({
