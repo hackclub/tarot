@@ -313,6 +313,7 @@ cards:
   the_mycologist:
     name: The Mycologist
     arcanum: hacker
+    image: "the_mycologist.png"
     flavor:
       - You're a bit of a fun guy (or gal)
       - There's nothing wrong with something that's old
