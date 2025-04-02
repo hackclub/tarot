@@ -31,14 +31,8 @@ const getUser = async (username) => {
     throw new Error('Failed to fetch users');
   }
   const data = await response.json();
-  console.log('Found users in Airtable:', data.length);
   
   const user = data.find(record => record.fields.slack_uid === safeUsername)
-  console.log('Found user:', user ? {
-    slack_uid: user.fields.slack_uid,
-    has_hand: !!user.fields.hand,
-    has_auth_token: !!user.fields.auth_token
-  } : 'no user found');
 
   return {
     hand: user?.fields?.hand?.split(',') || [],
@@ -54,10 +48,8 @@ const getUserByAuthToken = async (authToken) => {
     filterByFormula: `{auth_token} = '${safeAuthToken}'`
   }
   const url = 'https://api2.hackclub.com/v0.1/Tarot/users?select='+ JSON.stringify(select)
-  console.log('Looking up user with authToken:', authToken, 'safeAuthToken:', safeAuthToken, 'url:', url)
   const response = await fetch(url)
   const data = await response.json()
-  console.log('Found user:', data[0])
   return data[0]
 }
 
