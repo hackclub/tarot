@@ -202,7 +202,7 @@ export class SlackBot {
         count: 110,
         flag: 'ending',
         action: async () => {
-          await this.sendMessage("Only one card remains on the table, and on it you see the depiction of a tassle-hatted fool juggling and dancing around.... it opens it's mouth as if to speak and words show up on the bottom of the card", messageTs)
+          await this.sendMessage("One animated card is now laid out on the table, and on it you see the depiction of a tassle-hatted fool juggling and dancing around.... it opens it's mouth as if to speak and words show up on the bottom of the card", messageTs)
         }
       }
     ]
