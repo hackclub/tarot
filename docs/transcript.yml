@@ -237,7 +237,7 @@ cards:
       - Time for a new perspective
       - Might be time to take a step back and look at the big picture
     requirements: |
-      don't work for more that 2 hours at a time
+      don't work for more than 2 hours at a time
   the_tower: # renamed to the monolith
     name: The Monolith
     image: "the_monolith.png"
