@@ -167,6 +167,7 @@ export class SlackBot {
         flag: 'deck_grows_1',
         action: async () => {
           maxHandSize = 3
+          await kv.set('max_hand_size', maxHandSize, null, true)
           await this.sendMessage("As more crowd gathers, the deck grows larger. You can now hold 3 cards.", messageTs)
         }
       },
@@ -184,6 +185,7 @@ export class SlackBot {
         flag: 'deck_grows_2',
         action: async () => {
           maxHandSize = 4
+          await kv.set('max_hand_size', maxHandSize, null, true)
           await this.sendMessage("As more crowd gathers, the deck grows larger... you think you can hold more cards?", messageTs)
         }
       },
@@ -192,11 +194,12 @@ export class SlackBot {
         flag: 'deck_grows_3',
         action: async () => {
           maxHandSize = 5
+          await kv.set('max_hand_size', maxHandSize, null, true)
           await this.sendMessage("As more crowd gathers, the deck grows larger.... you can now hold 5 cards", messageTs)
         }
       },
       {
-        count: 120,
+        count: 110,
         flag: 'ending',
         action: async () => {
           await this.sendMessage("Only one card remains on the table, and on it you see the depiction of a tassle-hatted fool juggling and dancing around.... it opens it's mouth as if to speak and words show up on the bottom of the card", messageTs)
@@ -278,12 +281,12 @@ export class SlackBot {
         const lastDraw = await kv.get(`card_draw:${username}`)
         if (lastDraw) {
           message += ' ' + transcript('drawing.too_soon')
-          contextMessage = "You're drawing too quickly! Slow down and try again."
+          contextMessage = "You're drawing too quickly! Slow down and try again after 30 seconds."
         } else {
           kv.set(`card_draw:${username}`, true, 30 * 1000)
 
           // If it's their first draw (empty hand) or they pass the probability check
-          if (userHand.length === 0 || Math.random() < (3 / Math.min(userCounts, 100))) {
+          if (userHand.length === 0 || Math.random() < (1 / 2)) {
             const allCards = transcript('cards')
             const cardKeys = Object.keys(allCards)
             const availableCards = cardKeys.filter(key => !userHand.includes(key))
