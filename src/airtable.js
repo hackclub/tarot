@@ -13,10 +13,13 @@ const addToHand = async (username, card) => {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      fieldsToMergeOn: ['slack_uid'],
+      performUpsert: {
+        fieldsToMergeOn: ['slack_uid']
+      },
       records: [{ fields: { slack_uid: username, hand: newHand.toString() } }]
     })
-  })
+  }).then(res => res.json())
+  console.log({response})
 }
 
 const getHand = async (username) => {

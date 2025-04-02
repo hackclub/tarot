@@ -35,7 +35,6 @@ app.get('/up', (req, res) => {
 // Slack events endpoint
 app.post('/slack/events', async (req, res) => {
   
-  console.log('Received Slack event:', req.body)
   // Handle Slack URL verification
   if (req.body.type === 'url_verification') {
     console.log('Handling URL verification')
