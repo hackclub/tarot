@@ -297,6 +297,7 @@ cards:
       - include a shop or marketplace in your project
   raccoon:
     name: Trash Racc
+    image: "raccoon.png"
     arcanum: hacker
     requirements: |
       do one of the following:
