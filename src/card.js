@@ -114,4 +114,4 @@ function rejectTrade(user2Id) {
   return `Trade request rejected by ${user2Id}.`;
 }
 
-module.exports = { cards, userCards, initiateTrade, acceptTrade, rejectTrade };
+card.cjs = { cards, userCards, initiateTrade, acceptTrade, rejectTrade };
