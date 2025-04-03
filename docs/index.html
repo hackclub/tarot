@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <script src="shader.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
   <script src="cards.js" defer></script>
+  <meta name="darkreader-lock">
+  <link rel="icon" type="image/x-icon" href="card_icon.png">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:wght@400;600&display=swap');
 
@@ -230,21 +232,21 @@
       border-radius: 1rem;
       padding: 1.5rem;
       position: relative;
-      box-shadow: 
-        0 0 0 1px rgba(255, 255, 255, 0.1),
-        0 4px 8px rgba(0, 0, 0, 0.2),
-        0 8px 16px rgba(0, 0, 0, 0.1);
+      box-shadow:
+              0 0 0 1px rgba(255, 255, 255, 0.1),
+              0 4px 8px rgba(0, 0, 0, 0.2),
+              0 8px 16px rgba(0, 0, 0, 0.1);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       cursor: pointer;
       overflow: hidden;
     }
 
     .card.owned {
-      box-shadow: 
-        0 0 0 2px #ffd700,
-        0 0 20px rgba(255, 215, 0, 0.3),
-        0 4px 8px rgba(0, 0, 0, 0.2),
-        0 8px 16px rgba(0, 0, 0, 0.1);
+      box-shadow:
+              0 0 0 2px #ffd700,
+              0 0 20px rgba(255, 215, 0, 0.3),
+              0 4px 8px rgba(0, 0, 0, 0.2),
+              0 8px 16px rgba(0, 0, 0, 0.1);
     }
 
     #arcana .card {
@@ -254,10 +256,10 @@
 
     .card:hover {
       transform: translateY(-5px);
-      box-shadow: 
-        0 0 0 1px rgba(255, 255, 255, 0.2),
-        0 8px 16px rgba(0, 0, 0, 0.3),
-        0 16px 32px rgba(0, 0, 0, 0.2);
+      box-shadow:
+              0 0 0 1px rgba(255, 255, 255, 0.2),
+              0 8px 16px rgba(0, 0, 0, 0.3),
+              0 16px 32px rgba(0, 0, 0, 0.2);
     }
 
     .card::before {
@@ -342,10 +344,10 @@
       max-height: 90vh;
       overflow-y: auto;
       position: relative;
-      box-shadow: 
-        0 0 0 1px rgba(255, 255, 255, 0.1),
-        0 4px 8px rgba(0, 0, 0, 0.2),
-        0 8px 16px rgba(0, 0, 0, 0.1);
+      box-shadow:
+              0 0 0 1px rgba(255, 255, 255, 0.1),
+              0 4px 8px rgba(0, 0, 0, 0.2),
+              0 8px 16px rgba(0, 0, 0, 0.1);
     }
 
     .modal-close {
@@ -414,12 +416,29 @@
       transition: color 0.3s ease;
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 1rem;
+      padding-left:0.5rem;
+      padding-right:0.5rem;
     }
 
     footer a:hover {
       color: #fff;
       text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+
+    footer a svg {
+      fill:#ffd700;
+      fill-opacity:1;
+      display: inline-flex;
+      transition: fill 0.3s ease;
+      align-items: center;
+      gap: 1rem;
+      padding-left:0.5rem;
+      padding-right:0.5rem;
+    }
+
+    footer a svg:hover {
+      fill: #fff;
     }
   </style>
   <script>
@@ -475,17 +494,17 @@
     function scrambleText(element) {
       const text = element.textContent;
       const positions = [];
-      
+
       // Find all positions that aren't spaces
       for (let i = 0; i < text.length; i++) {
         if (text[i] !== ' ') {
           positions.push(i);
         }
       }
-      
+
       // Pick a random position to change
       const randomPos = positions[Math.floor(Math.random() * positions.length)];
-      
+
       // Create new text with one character changed
       const newText = text.split('');
       newText[randomPos] = getRandomChar();
@@ -506,16 +525,16 @@
 
     function initScrambledText() {
       const scrambledElements = document.querySelectorAll('.scrambled');
-      
+
       scrambledElements.forEach((element, index) => {
         // Store the original text if not already stored
         if (!element.getAttribute('data-text')) {
           element.setAttribute('data-text', element.textContent);
         }
-        
+
         // Start with scrambled text
         element.textContent = createInitialScramble(element.getAttribute('data-text'));
-        
+
         // Set up interval for continuous scrambling with offset
         const offset = Math.random() * 1000; // Random offset between 0-1000ms
         setTimeout(() => {
@@ -524,149 +543,152 @@
       });
     }
   </script>
-  <title>10 days of tarot</title>
+  <title>10 Days of Tarot</title>
 </head>
 <body>
 <button class="pause-button" id="pauseButton" onclick="toggleShader()">
   <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
 </button>
-  <button class="music-button" id="musicButton" onclick="toggleMusic()">
-    <svg viewBox="0 0 16 16" fill="currentColor">
-      <path d="m 7 1.007812 c -0.296875 -0.003906 -0.578125 0.125 -0.769531 0.351563 l -3.230469 3.640625 h -1 c -1.09375 0 -2 0.84375 -2 2 v 2 c 0 1.089844 0.910156 2 2 2 h 1 l 3.230469 3.640625 c 0.210937 0.253906 0.492187 0.363281 0.769531 0.359375 z m 0 0"></path>
-      <path d="m 10 5 c -0.265625 0 -0.519531 0.105469 -0.707031 0.292969 c -0.390625 0.390625 -0.390625 1.023437 0 1.414062 l 1.292969 1.292969 l -1.292969 1.292969 c -0.390625 0.390625 -0.390625 1.023437 0 1.414062 s 1.023437 0.390625 1.414062 0 l 1.292969 -1.292969 l 1.292969 1.292969 c 0.390625 0.390625 1.023437 0.390625 1.414062 0 s 0.390625 -1.023437 0 -1.414062 l -1.292969 -1.292969 l 1.292969 -1.292969 c 0.390625 -0.390625 0.390625 -1.023437 0 -1.414062 c -0.1875 -0.1875 -0.441406 -0.292969 -0.707031 -0.292969 s -0.519531 0.105469 -0.707031 0.292969 l -1.292969 1.292969 l -1.292969 -1.292969 c -0.1875 -0.1875 -0.441406 -0.292969 -0.707031 -0.292969 z m 0 0"></path>
-    </svg>
-  </button>
-  <div class="title-section">
-    <h1><img src="title.svg" alt="TaroT" style="max-width: 100%; height: auto;"></h1>
-    <div class="subtitle">choose your own fate</div>
-    <hr>
+<button class="music-button" id="musicButton" onclick="toggleMusic()">
+  <svg viewBox="0 0 16 16" fill="currentColor">
+    <path d="m 7 1.007812 c -0.296875 -0.003906 -0.578125 0.125 -0.769531 0.351563 l -3.230469 3.640625 h -1 c -1.09375 0 -2 0.84375 -2 2 v 2 c 0 1.089844 0.910156 2 2 2 h 1 l 3.230469 3.640625 c 0.210937 0.253906 0.492187 0.363281 0.769531 0.359375 z m 0 0"></path>
+    <path d="m 10 5 c -0.265625 0 -0.519531 0.105469 -0.707031 0.292969 c -0.390625 0.390625 -0.390625 1.023437 0 1.414062 l 1.292969 1.292969 l -1.292969 1.292969 c -0.390625 0.390625 -0.390625 1.023437 0 1.414062 s 1.023437 0.390625 1.414062 0 l 1.292969 -1.292969 l 1.292969 1.292969 c 0.390625 0.390625 1.023437 0.390625 1.414062 0 s 0.390625 -1.023437 0 -1.414062 l -1.292969 -1.292969 l 1.292969 -1.292969 c 0.390625 -0.390625 0.390625 -1.023437 0 -1.414062 c -0.1875 -0.1875 -0.441406 -0.292969 -0.707031 -0.292969 s -0.519531 0.105469 -0.707031 0.292969 l -1.292969 1.292969 l -1.292969 -1.292969 c -0.1875 -0.1875 -0.441406 -0.292969 -0.707031 -0.292969 z m 0 0"></path>
+  </svg>
+</button>
+<div class="title-section">
+  <h1><img src="title.svg" alt="TaroT" style="max-width: 100%; height: auto;"></h1>
+  <div class="subtitle">choose your own fate</div>
+  <hr>
+</div>
+<div class="content-section">
+  <div class="content">
+    <h2>How to play</h2>
+    <h3>Draw your cards</h3>
+    <p>
+      Draw your cards by pulling them out of the #draw-tarot channel in Slack.
+    </p>
+    <h3>Gain your karma</h3>
+    <p>
+      Build a project to gain karma. For every hour you spend working on a project, you receive one karma.
+      You can log your time using <a href="https://hackatime.hackclub.com" target="_blank">Hackatime</a>, or in <span class="scrambled" data-text="_____ _______"></span>.
+    </p>
+    <p>
+      Every card has a karma requirement, and it will only contribute to your karma if you can show you met it.
+    </p>
+    <h3>Play your hand</h3>
+    <p>
+      Submit your finished project at <span class="scrambled" data-text="___ ____ __"></span>.
+    </p>
+    <p>
+
+    </p>
   </div>
-  <div class="content-section">
-    <div class="content">
-      <h2>How to play</h2>
-      <h3>Draw your cards</h3>
+
+  <div class="content">
+    <h2>Karma</h2>
+    <p class="content">
+      You gain Karma through the amount of time spent on your project. For each hour you spend on a project, tracked with <a href="https://hackatime.hackclub.com" target="_blank">Hackatime</a>, you gain one Karma. Each card that you complete and submit with your project will add a multiplier to your total karma gained through that project.
+    </p>
+  </div>
+
+  <div class="content">
+      <h2>F.A.Q.</h2>
+      <h3>How many cards can I draw?</h3>
       <p>
-        Draw your cards by pulling them out of the #announcements channel in slack.
+        You can draw up to 5 cards. Once you use your cards you can not draw more.
       </p>
-      <h3>Gain your karma</h3>
+      <h3>What do the cards do?</h3>
       <p>
-        Build a project to gain karma. Each hour you spend working on a project, you get one karma.
-        You can log your time using <a href="https://hackatime.hackclub.com" target="_blank">Hackatime</a>, or in <span class="scrambled" data-text="_____ _______"></span>.
+        Each card offers challenges that, when completed, act as multipliers on the time spent on your project. You can submit as many cards as you want with each project, but you can not use the same card on multiple projects.
       </p>
+      <h3>What's an "OMG Moment"?</h3>
       <p>
-        Every card has a karma requirement, and it will only contribute to your karma if you can show you met it.
-      </p>
-      <h3>Play your hand</h3>
-      <p>
-        Submit your finished project at <span class="scrambled" data-text="___ ____ __"></span>. 
+        An "OMG Moment" is a breakthrough point in your project where items comes together. This is a moment where you can say "OMG" and then take a video of your project and submit it.
       </p>
       <p>
 
       </p>
     </div>
-
-    <div class="content">
-      <h2>Karma</h2>
-
-      <p class="content">
-        You gain Karma through the amount of time spent on your project. For each hour you spend on a project, tracked with <a href="https://hackatime.hackclub.com" target="_blank">Hackatime</a>, you gain one Karma. Each card that you complete and submit with your project will add a multiplier to your total karma gained through that project.
-      </p>
-    </div>
-
-    <div class="content-section">
-      <div class="content">
-        <h2>F.A.Q.</h2>
-        <h3>How many cards can I draw?</h3>
-        <p>
-          You can draw up to 5 cards. Once you use your cards you can not draw more.
-        </p>
-        <h3>What do the cards do?</h3>
-        <p>
-          Each card offers challenges that, when completed, act as multipliers on the time spent on your project. You can submit as many cards as you want with each project, but you can not use the same card on multiple projects.
-        </p>
-        <h3>What's an "OMG Moment"?</h3>
-        <p>
-          An "OMG Moment" is a breakthrough point in your project where items comes together. This is a moment where you can say "OMG" and then take a video of your project and submit it.
-        </p>
-        <p>
-  
-        </p>
-      </div>
 
     <div class="content" id="arcana">
-      <h2>Arcana</h2>
-    </div>
-    <canvas id="canvas"></canvas>
+    <h2>Arcana</h2>
   </div>
+  <canvas id="canvas"></canvas>
+</div>
 
-  <!-- Footer -->
-  <footer>
-    <a href="https://github.com/hackclub/tarot" target="_blank">
-      View on GitHub
-    </a>
-  </footer>
+<!-- Footer -->
+<footer style="color:#ffd700;">
+  <a href="https://hackclub.com"><svg viewBox="0 0 526 184" style="height:1rem;">
+    <path d="M 113.02734,0.09179687 C 75.816049,-1.1136606 58.24376,9.9899464 56.203125,11.375 c -0.1462,0.0992 -0.239847,0.226872 -0.310547,0.388672 L 30.5,69.898438 17.4375,115.76953 c -0.202,0.709 0.412926,1.38467 1.140625,1.26367 33.739566,-5.60199 60.27883,-0.49175 115.421875,14.74024 55.99994,15.46898 103.42609,35.92383 191,35.92383 81.18592,0 184.59116,-94.773928 199.24414,-108.599614 0.658,-0.621099 0.14328,-1.650672 -0.76172,-1.638672 -21.81498,0.2896 -41.29582,0.06588 -46.88281,-0.01172 -0.74,-0.0102 -1.20423,-0.794226 -0.86523,-1.453125 L 497.2168,14.177734 c 0.38,-0.740899 -0.80663,-1.868187 -1.51563,-1.429687 C 474.32819,25.981234 355.38366,92.170018 237.42578,35.609375 182.79127,9.4126012 141.96946,1.0293749 113.02734,0.09179687 Z M 91.03125,26.007812 c 4.365606,0.232518 9.0974,5.501274 9.58008,18.970704 -0.076,3.461392 -1.802053,7.161105 -1.251955,8.595703 0.1677,0.564898 14.255855,5.769531 14.255855,5.769531 0,0 5.01166,-11.664346 8.09766,-16.990234 5.77298,-14.467572 18.53267,-6.293326 14.80469,2.660156 -2.473,13.991372 -11.4393,40.450423 -13.36328,46.787109 -4.323,12.321779 -19.95378,14.324299 -14.5918,-2.355469 1.405,-6.430486 2.7793,-14.203124 2.7793,-14.203124 L 94.273438,68.699219 c -10e-7,0 -3.315669,6.621421 -6.539063,12.724609 -5.43829,11.052578 -24.4309,15.393562 -13.294922,-11.208984 5.36139,-16.679568 7.91339,-29.587777 9.242188,-37.101563 0.781592,-4.421059 3.954137,-7.286314 7.349609,-7.105469 z m 80.18359,15.998047 c 0.24134,0.0089 0.47718,0.0281 0.70899,0.05273 1.6,0.1324 3.77545,3.385626 5.43945,6.511718 5.448,20.58766 -4.31503,58.453093 -6.04101,60.996103 -5.942,9.59798 -16.36819,7.78304 -12.40821,-2.58594 1.85,-6.29898 3.83203,-12.025397 3.83203,-12.025397 L 149.25,93.447266 c -10.60498,20.602064 -20.13953,11.976254 -14.64453,3.076172 5.87798,-10.42628 18.40036,-33.252543 24.27734,-44.761719 4.0725,-8.107484 8.71202,-9.889571 12.33203,-9.75586 z m 43.97266,16 c 10.93437,-0.290912 14.04937,9.862088 12.39844,14.513672 -0.944,2.736096 -4.6591,5.843758 -9.95508,-0.923828 -8.82498,-4.42129 -14.36,13.647212 -16.875,22.746094 -1.068,5.410288 -1.94434,15.470593 2.97266,19.433593 2.89998,2.365 6.48973,1.93141 9.13671,2.06641 2.079,0.261 6.24297,8.36158 -5.91601,12.01758 -2.08,-0.262 -12.79105,-0.29504 -17.20703,-10.625 -4.859,-10.71398 -1.7793,-26.433599 -1.7793,-26.433599 0,0 6.40863,-32.458297 24.93359,-32.591797 0.79938,-0.116943 1.56206,-0.18373 2.29102,-0.203125 z M 433.75,59 c 1.49197,0.0077 2.88144,0.244041 4.17969,0.712891 3.03998,1.867796 5.00554,7.000631 4.18554,11.419921 -0.94698,3.842194 -2.52734,6.978516 -2.52734,6.978516 5.256,0.5298 9.10352,5.774639 10.10352,12.640625 1,6.866086 -5.46812,13.328127 -17.4961,17.328127 -4.05198,1.141 -8.35587,1.12875 -8.54687,-0.28125 -0.129,-2.757 -10.3418,-35.601564 -10.3418,-35.601564 -0.319,-1.988196 -1.39512,-4.168769 3.92188,-7.164063 C 423.87425,61.015836 429.2741,58.976755 433.75,59 Z m -265.79492,0.386719 c -0.20118,-0.03582 -0.42977,0.01741 -0.68946,0.171875 l -12.84374,18.683594 13.30468,2.271484 c 0,0 3.24618,-20.589613 0.22852,-21.126953 z M 244.04492,68 c 3.91207,-0.06163 8.60513,5.076998 7.96094,11.396484 0.256,8.688984 -2.30859,20.160157 -2.30859,20.160157 0,0 1.25213,-2.91419 12.03711,-12.013672 10.78596,-9.098382 13.29887,-5.220521 11.92187,0.355469 -1.315,5.323988 -15.10937,19.041012 -15.10937,19.041012 1.94498,0.767 3.95703,6.67188 3.95703,6.67188 3.07798,8.06298 4.71329,14.41047 5.15429,19.10547 -0.18,13.69696 -12.54234,9.72704 -13.48632,2.74804 -0.883,-7.23198 -4.71876,-24.11328 -4.71876,-24.11328 l -4.39062,0.49414 c 0,0 -2.69367,8.74216 -5.13867,12.16016 -10.09198,14.93496 -19.25417,9.89759 -14.74219,1.34961 0.564,-1.204 5.32753,-9.68555 7.26953,-14.31055 8.14498,-18.935558 4.06136,-29.412293 7.31836,-39.359373 0.88063,-2.553777 2.49718,-3.657534 4.27539,-3.685547 z m 186.49805,0 c -2.73504,0.143894 -6.32807,1.731215 -9.64063,2.875 l 4.43946,10.396484 c 0,0 10.76218,-4.325368 9.49218,-10.097656 C 434.2788,68.64889 432.67022,67.888082 430.54297,68 Z m -31.82227,4 c 2.32834,-0.01668 5.17432,2.675652 6.90625,7.417969 2.566,9.39448 5.23944,24.570801 3.89844,29.966801 -1.278,5.13798 -2.6193,11.62784 -9.2793,13.21484 -1.72898,0.381 -16.13903,2.45543 -21.20703,-13.31055 -4.87798,-16.536762 -6.41609,-21.297073 -6.99609,-26.634763 -0.58,-5.33769 4.86236,-8.600329 8.06836,-2.869141 2.435,4.442792 5.26425,23.738584 9.24023,31.851564 2.18,3.285 6.66435,3.87728 8.77735,0.86328 2.49498,-4.557 0.69434,-15.940637 -0.84766,-25.074219 -1.092,-4.37499 -2.35011,-7.719115 -2.28711,-10.162109 C 395.41239,73.664847 396.90977,72.01297 398.7207,72 Z m -54.21093,10.001953 c 2.12729,0.0949 4.47031,2.956359 5.72656,10.695313 3.30998,10.667974 2.46864,31.295094 4.05664,33.205074 1.588,1.91 13.40839,-0.75503 16.60937,-1.83203 3.2,-1.077 9.09863,0.33697 7.76563,3.54297 -1.079,3.271 -4.13063,3.58086 -4.76563,3.96484 -0.636,0.383 -27.35565,8.30424 -28.34765,3.03126 -0.992,-5.274 -1.05469,-7.70065 -2.05469,-16.68165 -1,-8.98198 -3.432,-21.281627 -3.5,-28.666011 -0.0356,-3.92237 2.09882,-7.367325 4.50977,-7.259766 z M 318.72461,85 c 3.75961,0.04816 7.10011,2.248974 9.91992,6.232422 2.54,5.06509 1.14895,10.766328 -5.95703,5.623047 -0.445,-0.3903 -3.04408,-1.890748 -5.58008,-0.34375 -0.634,0.387098 -1.83747,0.902901 -3.10547,2.779297 -4.24498,6.338984 -2.97109,17.687314 -0.62109,23.529294 3.557,8.63298 7.80522,11.11122 13.44922,8.99024 5.64198,-2.122 5.89617,-0.95636 6.91015,-0.69336 1.268,0.329 4.50803,10.25837 -9.25195,12.48437 -13.75996,2.225 -21.81789,-8.95138 -22.46289,-28.40234 -0.325,-13.03098 2.58686,-21.64268 7.21484,-26.23047 3.38319,-2.740538 6.56023,-4.006212 9.48438,-3.96875 z m 117.73047,0.638672 c -4.46999,0.110534 -9.58985,3.648437 -9.58985,3.648437 0,0 3.04593,12.762551 2.91993,12.185551 -0.065,-0.833 15.69007,-3.971467 12.33007,-12.185551 -1.15567,-2.823247 -3.31873,-3.706336 -5.66015,-3.648437 z"/>
+    <path d="m 56.2741,6.96607 c 0,0 1.0366,-1.19259 2.9957,-0.94409 1.9591,0.2485 1.4758,2.50907 0.7379,3.98192 C 59.2698,11.4768 40.6829,49.588 27.2312,92.5764 13.7796,135.565 14.8081,181.5 14.8081,184 H 0.00983695 C -0.191864,179.5 2.61166,136.251 17.4214,92.5764 32.2312,48.9014 54.3114,8.48401 56.2741,6.96607 Z"/>
+  </svg></a>
+  &#x2022;
+  <a href="https://github.com/hackclub/tarot" target="_blank">
+    View on GitHub
+  </a>
+</footer>
 
-  <!-- Modal -->
-  <div id="cardModal" class="modal">
-    <div class="modal-content">
-      <button class="modal-close" onclick="closeModal()">&times;</button>
-      <h2 class="modal-title"></h2>
-      <img class="modal-image" src="" alt="">
-      <div class="modal-content-text"></div>
-      <div class="modal-flavor"></div>
-    </div>
+<!-- Modal -->
+<div id="cardModal" class="modal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <h2 class="modal-title"></h2>
+    <img class="modal-image" src="" alt="">
+    <div class="modal-content-text"></div>
+    <div class="modal-flavor"></div>
   </div>
+</div>
 
-  <script>
-    function openModal(card) {
-      const modal = document.getElementById('cardModal');
-      const title = modal.querySelector('.modal-title');
-      const image = modal.querySelector('.modal-image');
-      const content = modal.querySelector('.modal-content-text');
-      const flavor = modal.querySelector('.modal-flavor');
+<script>
+  function openModal(card) {
+    const modal = document.getElementById('cardModal');
+    const title = modal.querySelector('.modal-title');
+    const image = modal.querySelector('.modal-image');
+    const content = modal.querySelector('.modal-content-text');
+    const flavor = modal.querySelector('.modal-flavor');
 
-      title.textContent = card.name;
-      if (card.image) {
-        image.src = `cards/${card.image}`;
-        image.style.display = 'block';
-      } else {
-        image.style.display = 'none';
-      }
-      // Convert newlines to <br> tags for proper formatting
-      content.innerHTML = card.requirements.replace(/\n/g, '<br>');
-      
-      // Handle flavor text - if it's an array, pick a random line
-      if (Array.isArray(card.flavor)) {
-        const randomIndex = Math.floor(Math.random() * card.flavor.length);
-        flavor.textContent = card.flavor[randomIndex];
-      } else {
-        flavor.textContent = card.flavor;
-      }
+    title.textContent = card.name;
+    if (card.image) {
+      image.src = `cards/${card.image}`;
+      image.style.display = 'block';
+    } else {
+      image.style.display = 'none';
+    }
+    // Convert newlines to <br> tags for proper formatting
+    content.innerHTML = card.requirements.replace(/\n/g, '<br>');
 
-      modal.style.display = 'flex';
-      document.body.style.overflow = 'hidden';
+    // Handle flavor text - if it's an array, pick a random line
+    if (Array.isArray(card.flavor)) {
+      const randomIndex = Math.floor(Math.random() * card.flavor.length);
+      flavor.textContent = card.flavor[randomIndex];
+    } else {
+      flavor.textContent = card.flavor;
     }
 
-    function closeModal() {
-      const modal = document.getElementById('cardModal');
-      modal.style.display = 'none';
-      document.body.style.overflow = '';
-    }
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
 
-    // Close modal when clicking outside
-    window.onclick = function(event) {
-      const modal = document.getElementById('cardModal');
-      if (event.target === modal) {
-        closeModal();
-      }
-    }
+  function closeModal() {
+    const modal = document.getElementById('cardModal');
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
 
-    // Close modal with Escape key
-    document.addEventListener('keydown', function(event) {
-      if (event.key === 'Escape') {
-        closeModal();
-      }
-    });
-  </script>
+  // Close modal when clicking outside
+  window.onclick = function(event) {
+    const modal = document.getElementById('cardModal');
+    if (event.target === modal) {
+      closeModal();
+    }
+  }
+
+  // Close modal with Escape key
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+      closeModal();
+    }
+  });
+</script>
 </body>
 </html>
