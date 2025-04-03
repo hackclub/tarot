@@ -171,5 +171,4 @@ function rejectTrade(user2Id) {
   }
 }
 
-card.cjs = { cards, userCards, initiateTrade, acceptTrade, rejectTrade };
 export { cards, userCards, initiateTrade, acceptTrade, rejectTrade };
