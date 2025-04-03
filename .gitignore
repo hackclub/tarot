@@ -3,3 +3,5 @@ node_modules
 # ignore all files but .keep in the kv directory
 kv/*
 !kv/.keep
+docs/temp/*
+!docs/temp/.keep
