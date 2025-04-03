@@ -17,7 +17,6 @@ async function loadCardData() {
     const response = await fetch('transcript.yml');
     const yamlText = await response.text();
     const data = jsyaml.load(yamlText);
-    console.log('Loaded cards:', data.cards);
     return data.cards;
   } catch (error) {
     console.error('Error loading card data:', error);
@@ -104,8 +103,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Find the user's data
       const user = userData.find(u => u.fields.slack_uid === slackId);
       if (user) {
-        console.log('Found user data:', user);
-        // Parse the user's cards from the hand field
         userCards = user.fields.hand.split(',').map(card => card.trim());
       }
     }
