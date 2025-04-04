@@ -91,13 +91,57 @@ function getUrlParams() {
   };
 }
 
+async function getUserKarma() {
+  try {
+    const { slackId } = getUrlParams();
+    if (!slackId) return 0;
+
+    const response = await fetch(`https://api2.hackclub.com/v0.1/Tarot/moments?select=%7B%22filterByFormula%22%3A%22%7Bslack_uid%7D%3D'${slackId}'%22%7D`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error, fix me please! Status code: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    // Filter for approved projects and adds together their duration_seconds ( if there are multipled approved projects it adds them up)
+    const totalSeconds = data
+      .filter(item => item.fields.status === 'approved')
+      .reduce((sum, item) => sum + item.fields.duration_seconds, 0);
+
+    // Rounds down so their karma doesn't get artificially inflated.
+    const karma = Math.floor(totalSeconds / 3600);
+    
+    return karma;
+  } catch (error) {
+    console.error('Error calculating karma:', error);
+    return 0;
+  }
+}
+
 // Initialize when the DOM is loaded
 document.addEventListener('DOMContentLoaded', async () => {
   const { slackId } = getUrlParams();
   let userCards = [];
 
-  // Only fetch user data if slack_id is present
   if (slackId) {
+    const karma = await getUserKarma();
+    console.log(`User karma: ${karma} hours`);
+
+    const h2Elements = document.querySelectorAll('h2');
+    const secondH2 = h2Elements[1];
+    const karmaDisplay = document.createElement('p');
+    karmaDisplay.style.cssText = `
+      font-size: 1.5em;
+      margin: -35px 0 5px 0;
+      font-family: 'Cinzel', serif;
+      color: #ffd700;
+      text-align: center;
+      text-shadow: 0 0 5px #ffd700, 0 0 10px #ffd700, 0 0 15px #ffd700;
+    `;
+    karmaDisplay.textContent = ` Your Karma: ${karma}`;
+    secondH2.insertAdjacentElement('afterend', karmaDisplay);
+
     const userData = await fetchUserData();
     if (userData) {
       // Find the user's data
@@ -142,4 +186,4 @@ document.addEventListener('DOMContentLoaded', async () => {
   } else {
     console.error('Invalid cards data:', cards);
   }
-}); 
+});
