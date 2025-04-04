@@ -15,6 +15,7 @@ oauth_config:
       - app_mentions:read
       - channels:history
       - groups:history
+      - files:write
 settings:
   event_subscriptions:
     request_url: https://tarot.hackclub.com/slack/events
