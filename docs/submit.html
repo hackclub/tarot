@@ -311,6 +311,12 @@
       font-size: 0.9rem;
       opacity: 0.8;
     }
+
+    .field-hint {
+      font-size: 0.8rem;
+      color: #ffd700;
+      margin-bottom: 0.5rem;
+    }
   </style>
 </head>
 <body>
@@ -359,6 +365,7 @@
 
         <div class="cards-section">
           <h3>Which card requirements does this hit?</h3>
+          <div class="field-hint">Hover over a card to see the requirements</div>
           <div id="cards-grid" class="cards-grid">
             <!-- Cards will be populated here -->
           </div>
@@ -372,6 +379,8 @@
 
         <div class="form-group">
           <label for="description">What did you make?</label>
+          <div class="field-hint">- Include links to GitHub if you have them</div>
+          <div class="field-hint broken-keyboard" style="display: none;">- Explain which letter you didn't use, but don't type the forbidden letter</div>
           <textarea id="description" name="description" placeholder="Describe what you built and how it works..." required></textarea>
         </div>
 
@@ -551,6 +560,16 @@
       const selectedCards = Array.from(document.querySelectorAll('.card-item.selected'))
         .map(card => card.dataset.cardId);
       document.getElementById('selected_cards').value = selectedCards.join(',');
+      
+      // Check if the_broken_keyboard is selected
+      const brokenKeyboardHint = document.querySelector('.broken-keyboard');
+      if (brokenKeyboardHint) {
+        if (selectedCards.includes('the_broken_keyboard')) {
+          brokenKeyboardHint.style.display = 'block';
+        } else {
+          brokenKeyboardHint.style.display = 'none';
+        }
+      }
     }
 
     document.getElementById('submitForm').addEventListener('submit', async function(e) {
