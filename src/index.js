@@ -39,9 +39,16 @@ try {
 
 // Run cleanup every 10 minutes
 setInterval(cleanupOldFiles, 10 * 60 * 1000);
-
-// Run initial cleanup
 cleanupOldFiles();
+
+const postOmgMomentLoop = async () => {
+  const posted = await postOmgMoment()
+  let timeout = 60 * 1000
+  if (!posted) { timeout *= 10 }
+  setTimeout(postOmgMomentLoop, timeout)
+}
+
+postOmgMomentLoop()
 
 // Middleware to parse JSON bodies with increased limit
 app.use(express.json({ limit: '100mb' }))
