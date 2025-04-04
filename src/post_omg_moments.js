@@ -35,7 +35,7 @@ export async function postOmgMoment() {
     const message = `🔮 <@${slack_uid}>'s \`${project}\` OMG moment: \`\`\`${description}\`\`\` -- ${karma.toFixed(1)} karma in ${duration_hours.toFixed(1)} hours earned by playing these cards: \`${selected_cards}\``
     await slack.files.completeUploadExternal({
       files: [{id: file_id}],
-      channel_id: "C08KN8PKPE3",
+      channel_id: "C08L60RUQ92",
       initial_comment: message
     })
 
