@@ -7,6 +7,7 @@ import { mkdir } from 'fs/promises'
 import fileUpload from 'express-fileupload'
 import { cleanupOldFiles } from './garbage_collection.js'
 import { healthCheck, submitStretch, getSubmissionData } from './api.js'
+import { postOmgMoment } from './post_omg_moments.js'
 
 const app = express()
 const port = process.env.PORT || 3030
@@ -89,6 +90,19 @@ app.post('/slack/events', async (req, res) => {
     console.log('Handling URL verification')
     return res.json({ challenge: req.body.challenge })
   }
+
+  console.log(req.body)
+
+  // Handle huddle events
+  // const HUDDLE_CHANNEL_ID = 'C08L60RUQ92'
+  // if (req.body.event?.subtype === 'huddle_thread' && 
+  //     req.body.event?.room?.call_family === 'huddle' &&
+  //     req.body.event?.channel === HUDDLE_CHANNEL_ID) {
+  //   // Handle huddle event here
+  //   console.log('Handling huddle event')
+  //   // run speedrun.js
+  //   await speedrun.handleHuddleEvent(req.body.event)
+  // }
 
   // Handle message events
   if (req.body.event?.type === 'message') {
