@@ -50,8 +50,13 @@ async function updateOpenHuddle(huddle) {
       })
     }).then(res => res.json())
     callData = airtableResponse?.records?.[0]
-    console.log("callData setting to kv", callData)
-    await kv.set(kvKey, callData, null, true)
+    await kv.set(kvKey, { 
+      ...callData, 
+      fields: { 
+        ...callData.fields,  // Keep existing fields
+        latest_reminder_ts: new Date() 
+      } 
+    }, null, true)
     const callCreated = airtableResponse?.createdRecords?.[0]
     console.log("callCreated", callCreated)
     if (callCreated?.fields) {
@@ -105,7 +110,13 @@ async function updateOpenHuddle(huddle) {
         records: [{ id: callData.id, fields: { latest_reminder_ts: new Date() } }]
       })
     })
-    const kvUpdate = kv.set(kvKey, { ...callData, fields: { latest_reminder_ts: new Date() } }, null, true)
+    const kvUpdate = kv.set(kvKey, { 
+      ...callData, 
+      fields: { 
+        ...callData.fields,  // Keep existing fields
+        latest_reminder_ts: new Date() 
+      } 
+    }, null, true)
 
     await Promise.all([slackPost, airtablePost, kvUpdate])
   }
@@ -148,7 +159,13 @@ async function closeOldHuddles(openHuddle) {
       })
     })
     batch.forEach(call => {
-      kv.set(`room:${call.fields.slack_room_id}`, { ...call, fields: { end_date: endDate } }, null, true)
+      kv.set(`room:${call.fields.slack_room_id}`, { 
+        ...call, 
+        fields: { 
+          ...call.fields,  // Keep existing fields
+          end_date: endDate 
+        } 
+      }, null, true)
       slack.chat.postMessage({
         channel: "C08L60RUQ92",
         text: transcript('speedrun.ended', { slack_id: call.fields.creator_slack_id }),

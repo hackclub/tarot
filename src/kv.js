@@ -2,7 +2,7 @@ const store = new Map()
 
 export const kv = {
   set(key, value, expirationMs = null, backed = false) {
-    console.time('set', key)
+    console.time('set', key, value)
     const entry = {
       value,
       expiresAt: expirationMs ? Date.now() + expirationMs : null
