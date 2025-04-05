@@ -8,6 +8,7 @@ import fileUpload from 'express-fileupload'
 import { cleanupOldFiles } from './garbage_collection.js'
 import { healthCheck, submitStretch, getSubmissionData } from './api.js'
 import { postOmgMoment } from './post_omg_moments.js'
+import { searchForHuddles } from './speedrun.js'
 
 const app = express()
 const port = process.env.PORT || 3030
@@ -41,13 +42,15 @@ try {
 setInterval(cleanupOldFiles, 10 * 60 * 1000);
 cleanupOldFiles();
 
+setInterval(searchForHuddles, 60 * 1000);
+searchForHuddles()
+
 const postOmgMomentLoop = async () => {
   const posted = await postOmgMoment()
   let timeout = 60 * 1000
   if (!posted) { timeout *= 10 }
   setTimeout(postOmgMomentLoop, timeout)
 }
-
 postOmgMomentLoop()
 
 // Middleware to parse JSON bodies with increased limit
