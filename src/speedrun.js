@@ -198,5 +198,4 @@ async function searchForHuddles() {
 
 }
 
-searchForHuddles()
-setInterval(searchForHuddles, 60 * 1000)
+export { searchForHuddles }
