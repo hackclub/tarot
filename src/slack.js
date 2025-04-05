@@ -138,7 +138,7 @@ export class SlackBot {
     }
 
     // Set rate limit
-    kv.set(`card_draw:${username}`, true, 30 * 1000)
+    kv.set(`card_draw:${username}`, true, 5 * 1000)
 
     // hardcoded now that the launch is over
     const userCounts = 100
