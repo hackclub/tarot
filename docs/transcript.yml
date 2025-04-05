@@ -1,5 +1,17 @@
 startup: tarot is starting up on port ${this.port}
 
+speedrun:
+  start:
+    - "Speedrun starting! Good luck <@{this.slack_id}>! Share a screenshot at least every 10 minutes so people can follow along! If you're a member of the audience you can post screenshots too to help the speedrunner!"
+  no_members:
+    - "Looks like it's just you here– invite some friends to join in!"
+  reminder:
+    - "This speedrun has been running for a while now. Share a screenshot so people can follow along!"
+  ended:
+    - "This speedrun has ended. Share a quick clip of your OMG moment in the thread here."
+  no_owner:
+    - "It looks like the creator of the call isn't here anymore– they need to join back in!"
+
 bad_project_ideas:
   base:
     - ${this.t('bad_project_ideas.overused_projects')}
