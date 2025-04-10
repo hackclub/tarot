@@ -47,8 +47,7 @@ searchForHuddles()
 
 const postOmgMomentLoop = async () => {
   const posted = await postOmgMoment()
-  let timeout = 60 * 1000
-  if (!posted) { timeout *= 10 }
+  let timeout = 10 * 60 * 1000
   setTimeout(postOmgMomentLoop, timeout)
 }
 postOmgMomentLoop()
