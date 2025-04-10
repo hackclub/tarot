@@ -5,6 +5,7 @@ speedrun:
     - "Speedrun starting! Good luck <@{this.slack_id}>! Share a screenshot at least every 10 minutes so people can follow along! If you're a member of the audience you can post screenshots too to help the speedrunner!"
   no_members:
     - "Looks like it's just you here– invite some friends to join in!"
+    - "Looks kinda lonely here– invite some friends to join in!"
   reminder:
     - "This speedrun has been running for a while now. Share a screenshot so people can follow along!"
   ended:
