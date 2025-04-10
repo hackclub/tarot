@@ -87,39 +87,6 @@ export class SlackBot {
     }
   }
 
-  // async initialMessage() {
-  //   try {
-  //     // Send initial message with black joker
-  //     const result = await this.sendMessage('🃏')
-      
-  //     // Wait 3 seconds
-  //     await new Promise(resolve => setTimeout(resolve, 15 * 1000))
-      
-  //     // Send follow-up message in thread
-  //     await this.sendMessage("ooooh! what's this deck of cards doing here?", result.ts, 'The Fool')
-
-  //     // Wait 3 seconds
-  //     await new Promise(resolve => setTimeout(resolve, 3000))
-
-  //     // Send follow-up message in thread
-  //     await this.sendMessage("I kinda want to take one...", result.ts, 'The Fool')
-
-  //     // Wait 3 seconds
-  //     await new Promise(resolve => setTimeout(resolve, 3000))
-
-  //     // Send follow-up message in thread
-  //     await this.sendMessage("DRAW", result.ts, 'The Fool')
-
-  //     // Wait 3 seconds
-  //     await new Promise(resolve => setTimeout(resolve, 3000))
-      
-  //     return result
-  //   } catch (error) {
-  //     console.error('Error sending initial message:', error)
-  //     throw error
-  //   }
-  // }
-
   async drawCard(messageTs, username, userMention) {
     await this.react(messageTs, 'beachball')
 
