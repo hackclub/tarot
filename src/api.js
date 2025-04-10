@@ -279,6 +279,13 @@ export async function getSubmissionData(req, res) {
       });
       const errorText = await hackatimeResponse.text();
       console.error('Hackatime error response:', errorText);
+      
+      if (hackatimeResponse.status === 404) {
+        return res.status(404).json({
+          error: 'No Hackatime account found with your Slack ID. Please sign up at https://hackatime.hackclub.com'
+        });
+      }
+      
       throw new Error(`Hackatime API error: ${hackatimeResponse.status} ${hackatimeResponse.statusText}`);
     }
 
