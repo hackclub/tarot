@@ -260,12 +260,18 @@ export async function getSubmissionData(req, res) {
       });
     }
     
-    const [moments, hackatimeResponse] = await Promise.all([
+    const [moments, speedrunRecordings, hackatimeResponse] = await Promise.all([
       fetch('https://api2.hackclub.com/v0.1/Tarot/moments').then(async r => {
         if (!r.ok) throw new Error(`Failed to fetch moments: ${await r.text()}`);
         const data = await r.json();
         // Filter moments for this user
         return data.filter(record => record.fields.slack_uid === slack_id);
+      }),
+      fetch('https://api2.hackclub.com/v0.1/Tarot/speedrun_recordings').then(async r => {
+        if (!r.ok) throw new Error(`Failed to fetch speedrun recordings: ${await r.text()}`);
+        const data = await r.json();
+        // Filter recordings for this user
+        return data.filter(record => record.fields.creator_slack_id === slack_id);
       }),
       fetch(`https://hackatime.hackclub.com/api/v1/users/${slack_id}/stats?features=projects&start_date=2025-04-02`)
     ]);
@@ -313,6 +319,7 @@ export async function getSubmissionData(req, res) {
     console.log('Successfully prepared response with:', {
       cards: cards.length,
       moments: moments.length,
+      speedrunRecordings: speedrunRecordings.length,
       projects: hackatimeStats?.data?.projects?.length || 0
     });
 
@@ -320,11 +327,137 @@ export async function getSubmissionData(req, res) {
     res.json({
       cards,
       moments,
+      speedrunRecordings,
       projects: hackatimeStats?.data?.projects || []
     });
   } catch (error) {
     console.error('Error getting submission data:', error);
     console.error('Error stack:', error.stack);
     res.status(500).json({ error: 'Failed to get submission data' });
+  }
+}
+
+// Speedrun submission endpoint
+export async function submitSpeedrun(req, res) {
+  try {
+    const { auth_token, project, description, start_date, end_date, slack_thread_url } = req.body;
+    
+    if (!auth_token || !project || !description || !start_date || !end_date || !slack_thread_url || !req.files?.video) {
+      return res.status(400).json({ 
+        error: 'Missing required fields',
+        required: ['auth_token', 'project', 'description', 'start_date', 'end_date', 'slack_thread_url', 'video']
+      });
+    }
+
+    // Get user data from Airtable using auth token
+    const decodedAuthToken = decodeURIComponent(auth_token);
+    const user = await getUserByAuthToken(decodedAuthToken);
+    
+    if (!user) {
+      return res.status(401).json({
+        error: 'Invalid auth token'
+      });
+    }
+
+    const slack_id = user.fields.slack_uid;
+    
+    // Validate video file
+    const video = req.files.video;
+    if (!video.mimetype.startsWith('video/')) {
+      return res.status(400).json({
+        error: 'File must be a video'
+      });
+    }
+
+    // Save video to temp directory
+    const tempDir = path.join(process.cwd(), 'temp');
+    const videoPath = path.join(tempDir, `${Date.now()}-${video.name}`);
+    await video.mv(videoPath);
+
+    // Calculate duration in seconds
+    const startTime = new Date(start_date);
+    const endTime = new Date(end_date);
+    const durationSeconds = Math.floor((endTime - startTime) / 1000);
+
+    // Create record in Airtable
+    const response = await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_SPEEDRUN_TABLE_NAME}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.AIRTABLE_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        records: [{
+          fields: {
+            creator_slack_id: slack_id,
+            project: project,
+            description: description,
+            start_date: start_date,
+            end_date: end_date,
+            duration_seconds: durationSeconds,
+            slack_thread_url: slack_thread_url,
+            status: 'Pending',
+            video: [{
+              url: videoPath
+            }]
+          }
+        }]
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Airtable error:', errorData);
+      return res.status(500).json({
+        error: 'Failed to create speedrun recording in Airtable'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Speedrun recording submitted successfully'
+    });
+  } catch (error) {
+    console.error('Error submitting speedrun recording:', error);
+    res.status(500).json({
+      error: 'Failed to submit speedrun recording'
+    });
+  }
+}
+
+// Get speedrun recordings for a user
+export async function getSpeedrunRecordings(req, res) {
+  try {
+    const { slack_id } = req.query;
+    
+    if (!slack_id) {
+      return res.status(400).json({ 
+        error: 'Missing required parameter: slack_id'
+      });
+    }
+
+    // Sanitize slack_id to prevent injection
+    const safeSlackId = slack_id.replace(/[^a-zA-Z0-9]/g, '');
+    
+    // Fetch speedrun recordings from Airtable
+    const response = await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_SPEEDRUN_TABLE_NAME}?filterByFormula=SEARCH("${safeSlackId}",{creator_slack_id})`, {
+      headers: {
+        'Authorization': `Bearer ${process.env.AIRTABLE_API_KEY}`
+      }
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Airtable error:', errorData);
+      return res.status(500).json({
+        error: 'Failed to fetch speedrun recordings from Airtable'
+      });
+    }
+
+    const data = await response.json();
+    res.json(data.records || []);
+  } catch (error) {
+    console.error('Error getting speedrun recordings:', error);
+    res.status(500).json({ error: 'Failed to get speedrun recordings' });
   }
 }

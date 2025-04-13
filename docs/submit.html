@@ -41,6 +41,14 @@
       text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
     }
 
+    h2 {
+      font-family: 'Cinzel', serif;
+      color: #ffd700;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
     form {
       display: flex;
       flex-direction: column;
@@ -317,6 +325,161 @@
       color: #ffd700;
       margin-bottom: 0.5rem;
     }
+
+    /* Speedrun recordings section */
+    .speedrun-section {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      border-radius: 6px;
+    }
+
+    .speedrun-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .speedrun-stat {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      padding: 1rem;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .speedrun-stat-label {
+      font-family: 'Cinzel', serif;
+      color: #ffd700;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .speedrun-stat-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .recent-speedruns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .speedrun-box {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      font-weight: bold;
+      color: white;
+      font-size: 1.1rem;
+    }
+
+    .speedrun-pending {
+      background: rgba(255, 215, 0, 0.3);
+      border: 1px solid rgba(255, 215, 0, 0.5);
+    }
+
+    .speedrun-approved {
+      background: rgba(0, 255, 0, 0.3);
+      border: 1px solid rgba(0, 255, 0, 0.5);
+    }
+
+    .speedrun-rejected {
+      background: rgba(255, 0, 0, 0.3);
+      border: 1px solid rgba(255, 0, 0, 0.5);
+    }
+
+    .section-divider {
+      height: 1px;
+      background: rgba(255, 215, 0, 0.3);
+      margin: 2rem 0;
+    }
+
+    /* New styles for speedrun list */
+    .speedrun-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 1rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .speedrun-item {
+      display: flex;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      border-radius: 6px;
+      padding: 0.8rem;
+      transition: all 0.3s ease;
+    }
+
+    .speedrun-item:hover {
+      background: rgba(0, 0, 0, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .speedrun-status {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      margin-right: 1rem;
+      flex-shrink: 0;
+    }
+
+    .speedrun-status.pending {
+      background: rgba(255, 215, 0, 0.5);
+      border: 1px solid rgba(255, 215, 0, 0.7);
+    }
+
+    .speedrun-status.approved {
+      background: rgba(0, 255, 0, 0.5);
+      border: 1px solid rgba(0, 255, 0, 0.7);
+    }
+
+    .speedrun-status.rejected {
+      background: rgba(255, 0, 0, 0.5);
+      border: 1px solid rgba(255, 0, 0, 0.7);
+    }
+
+    .speedrun-details {
+      flex-grow: 1;
+    }
+
+    .speedrun-project {
+      font-family: 'Cinzel', serif;
+      color: #ffd700;
+      font-size: 1.1rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .speedrun-duration {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .speedrun-link {
+      color: #ffd700;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      margin-left: 1rem;
+      white-space: nowrap;
+    }
+
+    .speedrun-link:hover {
+      color: white;
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -330,8 +493,9 @@
         Error: No auth token provided. Please access this page through the proper channel.
       </div>
 
-      <!-- New Moments Summary Section -->
+      <!-- Moments Summary Section -->
       <div id="moments-summary" style="display: none;">
+        <h2>Your Stretches</h2>
         <div class="moments-summary">
           <div class="moment-stat">
             <div class="moment-stat-label">Total Hours</div>
@@ -352,6 +516,16 @@
         </div>
         <div id="recent-moments" class="recent-moments"></div>
       </div>
+
+      <!-- Speedrun Recordings Section -->
+      <div id="speedrun-summary" style="display: none;">
+        <h2>Your Speedrun Recordings</h2>
+        <div id="speedrun-list" class="speedrun-list">
+          <!-- Speedrun items will be populated here -->
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
 
       <form id="submitForm" style="display: none;">
         <input type="hidden" id="auth_token" name="auth_token">
@@ -413,6 +587,7 @@
       // Hide all dynamic content initially
       document.getElementById('submitForm').style.display = 'none';
       document.getElementById('moments-summary').style.display = 'none';
+      document.getElementById('speedrun-summary').style.display = 'none';
       document.querySelector('.cards-section').style.display = 'none';
 
       if (!authToken) {
@@ -434,7 +609,7 @@
       document.getElementById('submitForm').style.display = 'block';
       
       // Load moments summary
-      if (data.moments.length > 0) {
+      if (data.moments && data.moments.length > 0) {
         // Calculate stats from duration_seconds
         const total = data.moments.reduce((sum, record) => {
           const seconds = parseInt(record.fields.duration_seconds) || 0;
@@ -490,8 +665,64 @@
         document.getElementById('moments-summary').style.display = 'block';
       }
 
+      // Load speedrun summary
+      if (data.speedrunRecordings && data.speedrunRecordings.length > 0) {
+        const speedrunList = document.getElementById('speedrun-list');
+        speedrunList.innerHTML = '';
+
+        data.speedrunRecordings.forEach(recording => {
+          const status = recording.fields.status || 'Pending';
+          const statusClass = status.toLowerCase();
+          
+          // Calculate duration in hours
+          const startTime = new Date(recording.fields.start_date);
+          const endTime = new Date(recording.fields.end_date);
+          const durationHours = ((endTime - startTime) / 3600000).toFixed(1);
+          
+          // Create speedrun item
+          const item = document.createElement('div');
+          item.className = 'speedrun-item';
+          
+          // Add status indicator
+          const statusIndicator = document.createElement('div');
+          statusIndicator.className = `speedrun-status ${statusClass}`;
+          item.appendChild(statusIndicator);
+          
+          // Add project details
+          const details = document.createElement('div');
+          details.className = 'speedrun-details';
+          
+          const project = document.createElement('div');
+          project.className = 'speedrun-project';
+          project.textContent = recording.fields.project || 'Unnamed Project';
+          details.appendChild(project);
+          
+          const duration = document.createElement('div');
+          duration.className = 'speedrun-duration';
+          duration.textContent = `${durationHours} hours`;
+          details.appendChild(duration);
+          
+          item.appendChild(details);
+          
+          // Add link to Slack thread if available
+          if (recording.fields.slack_thread_url) {
+            const link = document.createElement('a');
+            link.className = 'speedrun-link';
+            link.href = recording.fields.slack_thread_url;
+            link.target = '_blank';
+            link.textContent = 'View Thread';
+            item.appendChild(link);
+          }
+          
+          speedrunList.appendChild(item);
+        });
+
+        // Show the speedrun summary section
+        document.getElementById('speedrun-summary').style.display = 'block';
+      }
+
       // Load projects
-      if (data.projects.length > 0) {
+      if (data.projects && data.projects.length > 0) {
         const projectSelect = document.getElementById('project');
         
         // Sort projects by time spent (descending)
@@ -514,7 +745,7 @@
       }
 
       // Load cards
-      if (data.cards.length > 0) {
+      if (data.cards && data.cards.length > 0) {
         const cardsGrid = document.querySelector('.cards-grid');
         cardsGrid.innerHTML = ''; // Clear existing cards
 
