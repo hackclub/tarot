@@ -43,14 +43,18 @@ setInterval(cleanupOldFiles, 10 * 60 * 1000);
 cleanupOldFiles();
 
 setInterval(searchForHuddles, 60 * 1000);
-searchForHuddles()
+if (process.env.ENVIRONMENT !== 'dev') {
+  searchForHuddles()
+}
 
 const postOmgMomentLoop = async () => {
   const posted = await postOmgMoment()
   let timeout = 10 * 60 * 1000
   setTimeout(postOmgMomentLoop, timeout)
 }
-postOmgMomentLoop()
+if (process.env.ENVIRONMENT !== 'dev') {
+  postOmgMomentLoop()
+}
 
 // Middleware to parse JSON bodies with increased limit
 app.use(express.json({ limit: '100mb' }))
@@ -99,19 +103,6 @@ app.post('/slack/events', async (req, res) => {
     console.log('Handling URL verification')
     return res.json({ challenge: req.body.challenge })
   }
-
-  console.log(req.body)
-
-  // Handle huddle events
-  // const HUDDLE_CHANNEL_ID = 'C08L60RUQ92'
-  // if (req.body.event?.subtype === 'huddle_thread' && 
-  //     req.body.event?.room?.call_family === 'huddle' &&
-  //     req.body.event?.channel === HUDDLE_CHANNEL_ID) {
-  //   // Handle huddle event here
-  //   console.log('Handling huddle event')
-  //   // run speedrun.js
-  //   await speedrun.handleHuddleEvent(req.body.event)
-  // }
 
   // Handle message events
   if (req.body.event?.type === 'message') {
