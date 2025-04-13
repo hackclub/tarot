@@ -6,6 +6,7 @@ import { transcript } from './transcript.js'
 // Airtable configuration
 const AIRTABLE_BASE_ID = "appOkhzTn4Z3FI9gv"
 const AIRTABLE_TABLE_NAME = 'moments'
+const AIRTABLE_SPEEDRUN_TABLE_NAME = 'speedrun_recordings'
 
 // Health check endpoint
 export function healthCheck(req, res) {
