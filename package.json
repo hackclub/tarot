@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "start": "bun run src/index.js"
+    "start": "bun run src/index.js",
+    "dev": "bun --watch run src/index.js"
   },
   "dependencies": {
     "@slack/web-api": "^7.0.1",
